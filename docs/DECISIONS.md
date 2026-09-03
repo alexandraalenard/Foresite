@@ -27,14 +27,30 @@ _Last updated: 3 September 2026_
   Costs three image files instead of one; worth it, since this is the thing visitors
   actually look at.
 
-- **The iris travels a modest distance, on purpose.** The lashes that cross the open part
-  of the eye are baked into the iris image, so a wide sweep drags them along with it and
-  reads as a glitch. Two attempts to cut them out of the iris and re-draw them separately
-  both made it worse — a "dark = lash" test also catches the dark parts of this iris, and
-  a thinness test left speckles. Halving the travel instead (`GAZE_X`/`GAZE_Y` in the
-  script) keeps the movement clearly legible while the lashes stay convincingly attached.
-  If it ever needs to sweep further, the honest fix is a second source frame with the eye
-  actually looking sideways — not more retouching.
+- **The lashes over the iris are reflections, and they belong to the surface, not the iris.**
+  This was the bug behind every "glitchy" report. The pale strokes and the bright highlight
+  across the iris are the lashes mirrored in the wet front of the eye. They were baked into
+  the iris image, so the iris dragged them around with it.
+
+  Three attempts to detect them failed, and it is worth recording why so nobody repeats
+  them: testing for *dark* pixels also catches the dark parts of this iris and gouged holes
+  in it; testing for *thin dark* structures (a black top-hat) catches the iris's own radial
+  fibres, which are equally thin and dark; and simply shortening the iris's travel hid the
+  problem rather than fixing it.
+
+  What worked is a property of the eye, not of the pixels: **an iris ring is the same
+  brightness all the way round, and a reflection is not.** Converted to polar coordinates
+  the iris is near-constant along the angular axis at any given radius, so a localised
+  bright anomaly is a reflection by definition. Those are flagged, the gap is filled from
+  the unflagged angles at the same radius (which preserves the fibre texture), and the
+  reflection is stored separately as *pure added light* - the original minus the cleaned
+  iris.
+
+  The browser draws it with the `lighter` blend at a fixed position, over the moving iris.
+  Two consequences worth knowing: at rest the composite reproduces the original video frame
+  exactly, and the reflection has no cut-out edge, because it is light being added rather
+  than a patch being pasted. `eye_ai_refl.webp` is stored **lossless** for that reason -
+  compression noise in its black areas would lay a haze over the whole eye.
 
 - **Following the cursor repaints only the eye, not the whole hero.** Redrawing a
   full-screen image on every animation frame stuttered on large displays. The tracking now

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Foresite — Modern websites, built to be found</title>
   <meta name="description" content="Foresite rebuilds outdated small business websites and sets them up to be found — by search engines, by Google Maps, and by AI assistants. Flat-fee builds for Australian local businesses.">
-  <link rel="preload" as="image" href="frames/eye_human.webp?v=2" fetchpriority="high">
+  <link rel="preload" as="image" href="frames/eye_human.webp?v=3" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
@@ -1022,11 +1022,10 @@
   var AP   = { x: 375.0, y: 255.0, w: 630, h: 345 };    // the eye opening
   var EYE_X = 675, EYE_Y = 405;                          // centre of the eye
   var SAFE_W = 920, SAFE_H = 640;                        // must never be cropped
-  // How far the iris may travel. Deliberately modest: the lashes that cross
-  // the open eye are part of the iris image, so a large sweep drags them along
-  // with it and reads as a glitch. At this range the movement is clearly
-  // legible and the lashes stay put to the eye.
-  var GAZE_X = 34, GAZE_Y = 20;
+  // How far the iris may travel. The reflected lashes and the highlight now
+  // stay on the surface of the eye rather than riding along with the iris, so
+  // it can move properly again.
+  var GAZE_X = 58, GAZE_Y = 36;
 
   var BLINK_N = 30, EXPL_N = 27;
   var BLINK_CUT = 24;          // frames 0-23 are the blink; the rest is settling
@@ -1041,7 +1040,7 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=2';
+  var P = 'frames/', V = '?v=3';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 
@@ -1049,6 +1048,7 @@
   var aiBase = img('eye_ai_base.webp');
   var aiIris = img('eye_ai_iris.webp');
   var aiMask = img('eye_ai_mask.webp');
+  var aiRefl = img('eye_ai_refl.webp');
   var blink = [], expl = [], i;
   for (i = 0; i < BLINK_N; i++) blink.push(img('blink_' + pad(i) + '.webp'));
 
@@ -1064,7 +1064,7 @@
   }
   human.onload = function () { dirty = true; };
 
-  whenLoaded([human, aiBase, aiIris, aiMask].concat(blink), function () {
+  whenLoaded([human, aiBase, aiIris, aiMask, aiRefl].concat(blink), function () {
     blinkReady = true; dirty = true;
     if (wantsBlink) startBlink();
     for (var k = 0; k < EXPL_N; k++) expl.push(img('expl_' + pad(k) + '.webp'));
@@ -1171,6 +1171,15 @@
     octx.globalCompositeOperation = 'destination-in';
     octx.drawImage(aiMask, 0, 0);
     ctx.drawImage(off, ox + AP.x * k, oy + AP.y * k, AP.w * k, AP.h * k);
+    // The reflected lashes and the specular highlight live on the wet surface
+    // of the eye, not on the iris, so they are added last at a fixed position
+    // and the iris slides underneath them. Stored as pure added light, so
+    // 'lighter' reproduces the original frame exactly when the eye is at rest.
+    if (ready(aiRefl)) {
+      ctx.globalCompositeOperation = 'lighter';
+      ctx.drawImage(aiRefl, ox + AP.x * k, oy + AP.y * k, AP.w * k, AP.h * k);
+      ctx.globalCompositeOperation = 'source-over';
+    }
   }
   function drawEye(alpha) {
     if (alpha < 1) ctx.globalAlpha = alpha;
