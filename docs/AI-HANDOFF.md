@@ -47,15 +47,42 @@ a screen much taller than 16:9 — a phone held upright — fitting it whole wou
 thin letterboxed strip, so it grows until it fills a reasonable share of the panel,
 cropping forehead and cheek but never the eye. See `SAFE_W`/`SAFE_H` in the script.
 
-### How the cursor-following iris works
+### How the eye follows your cursor
 
-This is the part worth understanding before changing anything. The iris is **not** the
-whole picture being nudged around. It is a three-layer composite, all cut from a single
-video frame (source frame 186):
+It is real footage. The eye genuinely looks around in the source video: across frames
+96-120 the pupil travels 93px while the iris, the glowing ring and the lashes all stay
+consistent. Cursor position scrubs that run - cursor on the right of the screen shows the
+start of it, where the pupil sits furthest right; cursor on the left shows the end.
 
-| File | What it is |
-|---|---|
-| `eye_ai_base.webp` | the eye with the iris **painted out** — the white of the eye continues underneath |
+Nothing is composited, retouched or reconstructed. That matters, because an earlier
+version *was*: it cut the iris out of a single frame, rebuilt the white of the eye behind
+it and slid the iris around. Every visual defect this project hit came from that, and the
+fix was to stop doing it and use the footage that was in the video all along.
+
+**The video only moves the eye sideways.** Vertical cursor movement gets a small parallax
+of the whole image instead of a moving iris. Faking vertical movement would mean going
+back to cutting the iris out, so don't.
+
+If a wider sweep is ever wanted, the answer is a new source clip with a bigger eye
+movement in it - not retouching this one.
+
+### The frame files
+
+| Files | Count | What |
+|---|---|---|
+| `blink_000` … `blink_027` | 28 | the blink and transformation |
+| `gaze_000` … `gaze_024` | 25 | the eye looking around (video frames 96-120) |
+| `expl_000` … `expl_026` | 27 | the explosion |
+
+About 3.7 MB in total. Only `eye_human.webp` is needed for the first paint; the rest loads
+in the background, explosion frames last, and each one is decoded once off screen at load
+so that scrubbing never stutters.
+
+**Frame files are requested with a `?v=` tag** (`V` in the script). The filenames stay the
+same between versions, so without it browsers and Vercel's CDN serve old images against
+new code. Bump it whenever the frames change.
+
+---|---|
 | `eye_ai_iris.webp` | the iris on its own, as a disc with a transparent edge |
 | `eye_ai_mask.webp` | the shape of the eye opening, as a transparency mask |
 
@@ -87,7 +114,6 @@ must be regenerated together.
 |---|---|---|
 | `eye_human.webp` | 1 | stage 1, the still human eye |
 | `blink_000` … `blink_028` | 29 | the blink and transformation |
-| `eye_ai_base/iris/mask.webp` | 3 | stage 2, the cursor-following composite |
 | `expl_000` … `expl_026` | 27 | stage 3, the explosion |
 
 Total about 2.4 MB. Only `eye_human.webp` is needed for the first paint; everything else

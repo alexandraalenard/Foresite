@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Foresite — Modern websites, built to be found</title>
   <meta name="description" content="Foresite rebuilds outdated small business websites and sets them up to be found — by search engines, by Google Maps, and by AI assistants. Flat-fee builds for Australian local businesses.">
-  <link rel="preload" as="image" href="frames/eye_human.webp?v=3" fetchpriority="high">
+  <link rel="preload" as="image" href="frames/eye_human.webp?v=4" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
@@ -990,24 +990,26 @@
 /* ============================================================================
    Foresite hero eye
    ---------------------------------------------------------------------------
-   Three stages, driven by what the visitor does:
+   Every frame on screen is an untouched frame of the source video. Nothing is
+   composited, retouched or reconstructed.
 
      1. LAND    a still human eye                          (video 0:00)
      2. MOVE    on the first mouse move, or a tap, the eye blinks once and
-                reopens cybernetic; from then on the iris follows the cursor
-                                                           (video 1:00 -> 3:00)
-     3. SCROLL  scrolling the hero cuts to the explosion, scrubbed by scroll
-                position, finishing at 75% so the headline lands first
-                                                           (video ~7:50 -> end)
+                reopens cybernetic                         (video 1:00 -> 3:55)
+     3. FOLLOW  the eye genuinely looks around in the video: across frames
+                96-120 the pupil travels 93px while the iris, ring and lashes
+                stay consistent. Cursor position scrubs that run, so the eye
+                that follows you is real footage of an eye moving.
+     4. SCROLL  scrolling the hero cuts to the explosion, scrubbed by scroll
+                position, finishing at 75% so the headline lands first.
 
-   The whole video frame is always shown - fitted inside the hero, never
-   cropped - so nothing of the eye is lost on any screen shape.
+   The whole video frame is always shown, fitted inside the hero, so nothing of
+   the eye is lost on any screen shape.
 
-   The cursor-following iris is a real composite, not a nudge of the whole
-   picture: a plate whose iris has been painted out and the sclera rebuilt, the
-   iris itself as a movable disc, and a mask of the eye opening that the iris
-   is clipped to. That last part is what makes the iris slide behind the eyelid
-   instead of over the top of the lashes.
+   NOTE: the video only moves the eye horizontally, so vertical cursor movement
+   gets a slight parallax of the whole image rather than a moving iris. Faking
+   the vertical would mean cutting the iris out and reconstructing the eye
+   behind it, which is what this version deliberately stopped doing.
    ========================================================================= */
 (function () {
   var canvas = document.getElementById('heroCanvas');
@@ -1016,21 +1018,15 @@
   var ctx = canvas.getContext('2d');
   if (!ctx) return;
 
-  /* --- geometry, in the frames' own 1440x810 space --- */
-  var DW = 1440, DH = 810;
-  var IRIS = { x: 499.5, y: 229.5, w: 351 };            // the movable iris disc
-  var AP   = { x: 375.0, y: 255.0, w: 630, h: 345 };    // the eye opening
-  var EYE_X = 675, EYE_Y = 405;                          // centre of the eye
-  var SAFE_W = 920, SAFE_H = 640;                        // must never be cropped
-  // How far the iris may travel. The reflected lashes and the highlight now
-  // stay on the surface of the eye rather than riding along with the iris, so
-  // it can move properly again.
-  var GAZE_X = 58, GAZE_Y = 36;
+  var DW = 1440, DH = 810;             // every frame is this 16:9 scene
+  var EYE_X = 675, EYE_Y = 405;        // centre of the eye, for framing
+  var SAFE_W = 920, SAFE_H = 640;      // must never be cropped
 
-  var BLINK_N = 30, EXPL_N = 27;
-  var BLINK_CUT = 24;          // frames 0-23 are the blink; the rest is settling
-  var MS_BLINK = 55, MS_SETTLE = 70, MS_FADE = 220;
+  var BLINK_N = 28, GAZE_N = 25, EXPL_N = 27;
+  var BLINK_CUT = 24;                  // frames 0-23 are the blink itself
+  var MS_BLINK = 55, MS_SETTLE = 70;
   var EXPL_ENDS_AT = 0.75;
+  var EXPL_FADE = 3;                   // indices over which the burst fades in
 
   var mq = window.matchMedia;
   var reduce = mq && mq('(prefers-reduced-motion: reduce)').matches;
@@ -1040,19 +1036,16 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=3';
+  var P = 'frames/', V = '?v=4';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 
-  var human  = img('eye_human.webp');
-  var aiBase = img('eye_ai_base.webp');
-  var aiIris = img('eye_ai_iris.webp');
-  var aiMask = img('eye_ai_mask.webp');
-  var aiRefl = img('eye_ai_refl.webp');
-  var blink = [], expl = [], i;
+  var human = img('eye_human.webp');
+  var blink = [], gaze = [], expl = [], i;
   for (i = 0; i < BLINK_N; i++) blink.push(img('blink_' + pad(i) + '.webp'));
+  for (i = 0; i < GAZE_N;  i++) gaze.push(img('gaze_'  + pad(i) + '.webp'));
 
-  var blinkReady = false, explReady = false;
+  var ready1 = false, explReady = false;
   function whenLoaded(list, done) {
     var left = list.length;
     if (!left) { done(); return; }
@@ -1064,19 +1057,33 @@
   }
   human.onload = function () { dirty = true; };
 
-  whenLoaded([human, aiBase, aiIris, aiMask, aiRefl].concat(blink), function () {
-    blinkReady = true; dirty = true;
+  // Decoding and uploading a 1360px image the first time it is shown costs a
+  // dropped frame. Warm every one of them up once, off screen, so scrubbing
+  // through the run never stutters.
+  function warm(list) {
+    var c = document.createElement('canvas'); c.width = c.height = 2;
+    var x = c.getContext('2d');
+    list.forEach(function (im) {
+      if (im.decode) { im.decode().then(function () { x.drawImage(im, 0, 0, 2, 2); }).catch(function () {}); }
+      else if (ready(im)) { x.drawImage(im, 0, 0, 2, 2); }
+    });
+  }
+
+  whenLoaded([human].concat(blink, gaze), function () {
+    ready1 = true; dirty = true; warm(gaze); warm(blink);
     if (wantsBlink) startBlink();
     for (var k = 0; k < EXPL_N; k++) expl.push(img('expl_' + pad(k) + '.webp'));
-    whenLoaded(expl, function () { explReady = true; dirty = true; });
+    whenLoaded(expl, function () { explReady = true; dirty = true; warm(expl); });
   });
 
   /* -------------------------------- state ------------------------------- */
   var state = 'human', wantsBlink = false;
-  var blinkIndex = 0, blinkAt = 0, fadeStart = 0;
-  var gazeTX = 0, gazeTY = 0, gazeX = 0, gazeY = 0;
+  var blinkIndex = 0, blinkAt = 0;
+  var gazeTX = 0, gazeTY = 0;          // where the cursor is, -1..1
+  var gazeIdx = 0, gazeShown = -1;     // position within the gaze run
+  var tiltY = 0;
   var scrollP = 0, explIndex = 0, lastExplIndex = -1;
-  var dirty = true, gazeDirty = false;
+  var dirty = true;
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
 
   /* ------------------------- what starts the blink ---------------------- */
@@ -1087,7 +1094,7 @@
   }
   function trigger() {
     if (state !== 'human') return;
-    if (blinkReady) startBlink(); else wantsBlink = true;
+    if (ready1) startBlink(); else wantsBlink = true;
   }
 
   // Browsers can fire one mousemove on load at wherever the pointer already
@@ -1153,63 +1160,22 @@
   function ready(im) { return im && im.complete && im.naturalWidth; }
   function plate(im) { if (ready(im)) ctx.drawImage(im, ox, oy, DW * k, DH * k); }
 
-  // The iris is drawn into a small offscreen canvas and then masked to the eye
-  // opening, so it can never spill over the eyelid or the lashes.
-  var off = null, octx = null;
-  function drawIris() {
-    if (!ready(aiIris) || !ready(aiMask)) return;
-    if (!off) {
-      off = document.createElement('canvas');
-      off.width = AP.w; off.height = AP.h;
-      octx = off.getContext('2d');
-    }
-    octx.clearRect(0, 0, AP.w, AP.h);
-    octx.globalCompositeOperation = 'source-over';
-    octx.drawImage(aiIris,
-      IRIS.x - AP.x + gazeX * GAZE_X,
-      IRIS.y - AP.y + gazeY * GAZE_Y);
-    octx.globalCompositeOperation = 'destination-in';
-    octx.drawImage(aiMask, 0, 0);
-    ctx.drawImage(off, ox + AP.x * k, oy + AP.y * k, AP.w * k, AP.h * k);
-    // The reflected lashes and the specular highlight live on the wet surface
-    // of the eye, not on the iris, so they are added last at a fixed position
-    // and the iris slides underneath them. Stored as pure added light, so
-    // 'lighter' reproduces the original frame exactly when the eye is at rest.
-    if (ready(aiRefl)) {
-      ctx.globalCompositeOperation = 'lighter';
-      ctx.drawImage(aiRefl, ox + AP.x * k, oy + AP.y * k, AP.w * k, AP.h * k);
-      ctx.globalCompositeOperation = 'source-over';
-    }
-  }
-  function drawEye(alpha) {
-    if (alpha < 1) ctx.globalAlpha = alpha;
-    plate(aiBase);
-    drawIris();
-    ctx.globalAlpha = 1;
-  }
-  // Following the cursor only changes a small patch of the screen, so repaint
-  // just that patch. Repainting the whole hero image on every frame is what
-  // made the tracking stutter on large displays.
-  function renderGazeOnly() {
-    var rx = ox + AP.x * k, ry = oy + AP.y * k, rw = AP.w * k, rh = AP.h * k;
-    ctx.save();
-    ctx.beginPath(); ctx.rect(rx, ry, rw, rh); ctx.clip();
-    ctx.clearRect(rx, ry, rw, rh);
-    plate(aiBase);
-    drawIris();
-    ctx.restore();
-  }
-
   function render() {
     ctx.clearRect(0, 0, cw, ch);
     if (state === 'human') { plate(human); return; }
-    if (state === 'blink') {
-      plate(blink[Math.min(blinkIndex, BLINK_N - 1)]);
-      if (fadeStart) drawEye(clamp((performance.now() - fadeStart) / MS_FADE, 0, 1));
-      return;
+    if (state === 'blink') { plate(blink[Math.min(blinkIndex, BLINK_N - 1)]); return; }
+
+    var g = gaze[clamp(Math.round(gazeIdx), 0, GAZE_N - 1)];
+    if (explIndex > 0 && explReady && ready(expl[explIndex - 1])) {
+      // Ease into the burst so the jump from the eye run doesn't snap.
+      var a = clamp(explIndex / EXPL_FADE, 0, 1);
+      if (a < 1) plate(g);
+      ctx.globalAlpha = a;
+      plate(expl[explIndex - 1]);
+      ctx.globalAlpha = 1;
+    } else {
+      plate(g);
     }
-    if (explIndex > 0 && explReady && ready(expl[explIndex - 1])) plate(expl[explIndex - 1]);
-    else drawEye(1);
   }
 
   /* -------------------------------- loop -------------------------------- */
@@ -1218,27 +1184,33 @@
       var step = blinkIndex < BLINK_CUT ? MS_BLINK : MS_SETTLE;
       if (now - blinkAt >= step) {
         blinkAt = now; blinkIndex++; dirty = true;
-        if (blinkIndex >= BLINK_N - 1 && !fadeStart) fadeStart = now;
-      }
-      if (fadeStart) {
-        dirty = true;
-        if (now - fadeStart >= MS_FADE) { state = 'ai'; fadeStart = 0; onScroll(); }
+        if (blinkIndex >= BLINK_N) { state = 'ai'; gazeIdx = 0; onScroll(); }
       }
     }
-    if (!reduce) {
+
+    if (!reduce && state === 'ai') {
       var tx = gazeTX, ty = gazeTY;
       if (coarse && !seenMove) {   // no cursor to follow, so let it wander
-        tx = Math.sin(now * 0.00037) * 0.55 + Math.sin(now * 0.00091) * 0.22;
-        ty = Math.sin(now * 0.00053 + 1.7) * 0.40 + Math.sin(now * 0.0013) * 0.16;
+        tx = Math.sin(now * 0.00037) * 0.65 + Math.sin(now * 0.00091) * 0.25;
+        ty = Math.sin(now * 0.00053 + 1.7) * 0.4;
       }
-      var nx = gazeX + (tx - gazeX) * 0.075, ny = gazeY + (ty - gazeY) * 0.075;
-      if (Math.abs(nx - gazeX) > 0.0004 || Math.abs(ny - gazeY) > 0.0004) {
-        gazeX = nx; gazeY = ny;
-        if (state === 'ai' && explIndex === 0) gazeDirty = true;
+      // Cursor on the right of the screen -> the start of the run, where the
+      // pupil sits furthest right. Cursor on the left -> the end of it.
+      var target = ((1 - tx) / 2) * (GAZE_N - 1);
+      gazeIdx += (target - gazeIdx) * 0.12;
+      var shown = clamp(Math.round(gazeIdx), 0, GAZE_N - 1);
+      if (shown !== gazeShown) { gazeShown = shown; if (explIndex === 0) dirty = true; }
+
+      // The video only moves the eye sideways, so vertical cursor movement
+      // gets a gentle parallax of the whole image instead.
+      var ny = tiltY + (ty - tiltY) * 0.08;
+      if (Math.abs(ny - tiltY) > 0.002) {
+        tiltY = ny;
+        canvas.style.transform = 'translateY(' + (tiltY * 7).toFixed(2) + 'px)';
       }
     }
-    if (dirty) { dirty = false; gazeDirty = false; render(); }
-    else if (gazeDirty) { gazeDirty = false; renderGazeOnly(); }
+
+    if (dirty) { dirty = false; render(); }
     requestAnimationFrame(frame);
   }
 
