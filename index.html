@@ -1022,7 +1022,11 @@
   var AP   = { x: 375.0, y: 255.0, w: 630, h: 345 };    // the eye opening
   var EYE_X = 675, EYE_Y = 405;                          // centre of the eye
   var SAFE_W = 920, SAFE_H = 640;                        // must never be cropped
-  var GAZE_X = 66, GAZE_Y = 42;                          // furthest it may look
+  // How far the iris may travel. Deliberately modest: the lashes that cross
+  // the open eye are part of the iris image, so a large sweep drags them along
+  // with it and reads as a glitch. At this range the movement is clearly
+  // legible and the lashes stay put to the eye.
+  var GAZE_X = 34, GAZE_Y = 20;
 
   var BLINK_N = 30, EXPL_N = 27;
   var BLINK_CUT = 24;          // frames 0-23 are the blink; the rest is settling
@@ -1072,7 +1076,7 @@
   var blinkIndex = 0, blinkAt = 0, fadeStart = 0;
   var gazeTX = 0, gazeTY = 0, gazeX = 0, gazeY = 0;
   var scrollP = 0, explIndex = 0, lastExplIndex = -1;
-  var dirty = true;
+  var dirty = true, gazeDirty = false;
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
 
   /* ------------------------- what starts the blink ---------------------- */
@@ -1130,7 +1134,7 @@
   }
   var dpr = 1, cw = 0, ch = 0, k = 1, ox = 0, oy = 0;
   function resize() {
-    dpr = Math.min(window.devicePixelRatio || 1, 1.75);
+    dpr = Math.min(window.devicePixelRatio || 1, 1.5);
     cw = canvas.width  = Math.round(canvas.clientWidth  * dpr);
     ch = canvas.height = Math.round(canvas.clientHeight * dpr);
     // Show the whole frame wherever it fits. On a screen far taller than the
@@ -1152,25 +1156,39 @@
   // The iris is drawn into a small offscreen canvas and then masked to the eye
   // opening, so it can never spill over the eyelid or the lashes.
   var off = null, octx = null;
+  function drawIris() {
+    if (!ready(aiIris) || !ready(aiMask)) return;
+    if (!off) {
+      off = document.createElement('canvas');
+      off.width = AP.w; off.height = AP.h;
+      octx = off.getContext('2d');
+    }
+    octx.clearRect(0, 0, AP.w, AP.h);
+    octx.globalCompositeOperation = 'source-over';
+    octx.drawImage(aiIris,
+      IRIS.x - AP.x + gazeX * GAZE_X,
+      IRIS.y - AP.y + gazeY * GAZE_Y);
+    octx.globalCompositeOperation = 'destination-in';
+    octx.drawImage(aiMask, 0, 0);
+    ctx.drawImage(off, ox + AP.x * k, oy + AP.y * k, AP.w * k, AP.h * k);
+  }
   function drawEye(alpha) {
     if (alpha < 1) ctx.globalAlpha = alpha;
     plate(aiBase);
-    if (ready(aiIris) && ready(aiMask)) {
-      if (!off) {
-        off = document.createElement('canvas');
-        off.width = AP.w; off.height = AP.h;
-        octx = off.getContext('2d');
-      }
-      octx.clearRect(0, 0, AP.w, AP.h);
-      octx.globalCompositeOperation = 'source-over';
-      octx.drawImage(aiIris,
-        IRIS.x - AP.x + gazeX * GAZE_X,
-        IRIS.y - AP.y + gazeY * GAZE_Y);
-      octx.globalCompositeOperation = 'destination-in';
-      octx.drawImage(aiMask, 0, 0);
-      ctx.drawImage(off, ox + AP.x * k, oy + AP.y * k, AP.w * k, AP.h * k);
-    }
+    drawIris();
     ctx.globalAlpha = 1;
+  }
+  // Following the cursor only changes a small patch of the screen, so repaint
+  // just that patch. Repainting the whole hero image on every frame is what
+  // made the tracking stutter on large displays.
+  function renderGazeOnly() {
+    var rx = ox + AP.x * k, ry = oy + AP.y * k, rw = AP.w * k, rh = AP.h * k;
+    ctx.save();
+    ctx.beginPath(); ctx.rect(rx, ry, rw, rh); ctx.clip();
+    ctx.clearRect(rx, ry, rw, rh);
+    plate(aiBase);
+    drawIris();
+    ctx.restore();
   }
 
   function render() {
@@ -1207,10 +1225,11 @@
       var nx = gazeX + (tx - gazeX) * 0.075, ny = gazeY + (ty - gazeY) * 0.075;
       if (Math.abs(nx - gazeX) > 0.0004 || Math.abs(ny - gazeY) > 0.0004) {
         gazeX = nx; gazeY = ny;
-        if (state === 'ai' && explIndex === 0) dirty = true;
+        if (state === 'ai' && explIndex === 0) gazeDirty = true;
       }
     }
-    if (dirty) { dirty = false; render(); }
+    if (dirty) { dirty = false; gazeDirty = false; render(); }
+    else if (gazeDirty) { gazeDirty = false; renderGazeOnly(); }
     requestAnimationFrame(frame);
   }
 

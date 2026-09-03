@@ -27,6 +27,26 @@ _Last updated: 3 September 2026_
   Costs three image files instead of one; worth it, since this is the thing visitors
   actually look at.
 
+- **The iris travels a modest distance, on purpose.** The lashes that cross the open part
+  of the eye are baked into the iris image, so a wide sweep drags them along with it and
+  reads as a glitch. Two attempts to cut them out of the iris and re-draw them separately
+  both made it worse — a "dark = lash" test also catches the dark parts of this iris, and
+  a thinness test left speckles. Halving the travel instead (`GAZE_X`/`GAZE_Y` in the
+  script) keeps the movement clearly legible while the lashes stay convincingly attached.
+  If it ever needs to sweep further, the honest fix is a second source frame with the eye
+  actually looking sideways — not more retouching.
+
+- **Following the cursor repaints only the eye, not the whole hero.** Redrawing a
+  full-screen image on every animation frame stuttered on large displays. The tracking now
+  clips to the eye-opening rectangle, and the canvas backing store is capped at 1.5x
+  device pixels.
+
+- **Frame files are requested with a `?v=` tag.** The filenames stay the same between
+  versions, so without it browsers and Vercel's CDN serve old images against new code —
+  which is exactly what happened once, and looked like the fix had failed. `vercel.json`
+  pairs this with must-revalidate on the HTML and long-lived caching on the images. **Bump
+  the number in the script whenever the frame files change.**
+
 - **The blink is the transformation.** Human eye closes, circuitry traces across the lid,
   eye reopens cybernetic. Tying the change to the blink means there is no cross-fade or
   cut to explain — it reads as one event.
