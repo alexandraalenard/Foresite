@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Foresite — Modern websites, built to be found</title>
   <meta name="description" content="Foresite rebuilds outdated small business websites and sets them up to be found — by search engines, by Google Maps, and by AI assistants. Flat-fee builds for Australian local businesses.">
-  <link rel="preload" as="image" href="frames/eye_human.webp?v=4" fetchpriority="high">
+  <link rel="preload" as="image" href="frames/eye_human.webp?v=5" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
@@ -1020,9 +1020,11 @@
      2. MOVE    on the first mouse move, or a tap, the eye blinks once and
                 reopens cybernetic                         (video 1:00 -> 3:55)
      3. FOLLOW  the eye genuinely looks around in the video: across frames
-                96-120 the pupil travels 93px while the iris, ring and lashes
-                stay consistent. Cursor position scrubs that run, so the eye
-                that follows you is real footage of an eye moving.
+                92-108 the pupil sweeps 231px, left to right. Cursor position
+                scrubs that run, so the eye that follows you is real footage of
+                an eye moving. The sweep is not linear in time - it dwells then
+                flicks - so the cursor maps to the frame index rather than to
+                pupil position, which gives a natural saccade.
      4. SCROLL  scrolling the hero cuts to the explosion, scrubbed by scroll
                 position, finishing at 75% so the headline lands first.
 
@@ -1042,7 +1044,7 @@
   if (!ctx) return;
 
   var DW = 1440, DH = 810;             // every frame is this 16:9 scene
-  var EYE_X = 675, EYE_Y = 405;        // centre of the eye, for framing
+  var EYE_X = 697, EYE_Y = 405;        // centre of the eye, for framing
   var SAFE_W = 920, SAFE_H = 640;      // must never be cropped
   // How much of the panel the video fills. The source is an extreme macro of
   // an eye, so filling the panel entirely reads as very close. Below 1 the
@@ -1051,8 +1053,8 @@
   // Fraction of the frame's short side that fades out at each edge.
   var FEATHER = 0.12;
 
-  var BLINK_N = 28, GAZE_N = 25, EXPL_N = 27;
-  var BLINK_CUT = 24;                  // frames 0-23 are the blink itself
+  var BLINK_N = 28, GAZE_N = 17, EXPL_N = 27;
+  var BLINK_CUT = 18;                  // frames 0-23 are the blink itself
   var MS_BLINK = 55, MS_SETTLE = 70;
   var EXPL_ENDS_AT = 0.75;
   var EXPL_FADE = 3;                   // indices over which the burst fades in
@@ -1065,7 +1067,7 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=4';
+  var P = 'frames/', V = '?v=5';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 
@@ -1247,9 +1249,10 @@
         tx = Math.sin(now * 0.00037) * 0.65 + Math.sin(now * 0.00091) * 0.25;
         ty = Math.sin(now * 0.00053 + 1.7) * 0.4;
       }
-      // Cursor on the right of the screen -> the start of the run, where the
-      // pupil sits furthest right. Cursor on the left -> the end of it.
-      var target = ((1 - tx) / 2) * (GAZE_N - 1);
+      // In this clip the run starts with the pupil furthest LEFT and sweeps
+      // right, so the cursor maps straight onto it. (The previous clip ran the
+      // other way - check which way round a new clip goes before trusting it.)
+      var target = ((tx + 1) / 2) * (GAZE_N - 1);
       gazeIdx += (target - gazeIdx) * 0.12;
       var shown = clamp(Math.round(gazeIdx), 0, GAZE_N - 1);
       if (shown !== gazeShown) { gazeShown = shown; if (explIndex === 0) dirty = true; }
