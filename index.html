@@ -10,7 +10,7 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
   
-  <style>html{color-scheme:dark;background:#000000}img{max-width:100%}
+  <style>html{color-scheme:light;background:#F4EFEA}img{max-width:100%}
   .hero-eye-canvas{
     position:absolute; inset:0; z-index:0;
     width:100%; height:100%;
@@ -25,16 +25,17 @@
 
 <style>
   :root{
-    --ink:        #000000;
-    --ink-raised: #0A0F16;
-    --line:       #1A222C;
-    --line-soft:  #0D141C;
-    --paper:      #E7EEF7;
-    --mist:       #8FA2BC;
-    --mist-dim:   #5F7391;
-    --signal:     #E9B15C;
-    --signal-dim: #7C6238;
-    --shut:       #7A5148;
+    --bg:        #F4EFEA;
+    --bg-raised: #EAE2DA;
+    --line:       #C6B9AC;
+    --line-soft:  #D5CABE;
+    --text:      #15110E;
+    --text-2:       #524941;
+    --text-3:   #6D645B;
+    --signal:     #8F5409;
+    --signal-dim: #A87C3E;
+    --shut:       #8A4E42;
+    --good:       #2E6B45;
 
     --step-0: 0.75rem;
     --step-1: 0.875rem;
@@ -51,8 +52,8 @@
 
   body{
     margin: 0;
-    background: var(--ink);
-    color: var(--paper);
+    background: var(--bg);
+    color: var(--text);
     font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
     font-size: var(--step-2);
     line-height: 1.55;
@@ -64,7 +65,7 @@
     font-size: var(--step-0);
     letter-spacing: 0.14em;
     text-transform: uppercase;
-    color: var(--mist-dim);
+    color: var(--text-3);
   }
 
   em.accent{
@@ -86,7 +87,7 @@
     height: 100vh;
     min-height: 33rem;
     overflow: hidden;
-    background: var(--ink);
+    background: var(--bg);
   }
 
   .hero-eye-img{
@@ -100,9 +101,7 @@
     from{ transform: scale(1.0); }
     to{ transform: scale(1.06); }
   }
-  @media (prefers-reduced-motion: reduce){
-    .hero-eye-img{ animation: none; }
-  }
+  
 
   #seq{
     position: absolute;
@@ -121,17 +120,17 @@
     pointer-events: none;
     background:
       linear-gradient(to bottom,
-        rgba(0,0,0,0) 34%,
-        rgba(0,0,0,0.42) 62%,
-        rgba(0,0,0,0.86) 84%,
-        rgba(0,0,0,0.96) 100%),
+        rgba(244,239,234,0) 34%,
+        rgba(244,239,234,0.42) 62%,
+        rgba(244,239,234,0.86) 84%,
+        rgba(244,239,234,0.96) 100%),
       linear-gradient(100deg,
-        rgba(0,0,0,0.78) 0%,
-        rgba(0,0,0,0.34) 26%,
-        rgba(0,0,0,0) 52%);
+        rgba(244,239,234,0.78) 0%,
+        rgba(244,239,234,0.34) 26%,
+        rgba(244,239,234,0) 52%);
   }
 
-  .stage-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(120% 90% at 0% 100%, rgba(5,7,10,0.55) 0%, rgba(5,7,10,0) 44%),linear-gradient(105deg, rgba(5,7,10,0.86) 0%, rgba(5,7,10,0.52) 30%, rgba(5,7,10,0.1) 55%, rgba(5,7,10,0) 74%),linear-gradient(to bottom, rgba(5,7,10,0.32) 0%, rgba(5,7,10,0) 30%, rgba(5,7,10,0) 60%, rgba(5,7,10,0.5) 86%, rgba(5,7,10,0.9) 100%);}
+  .stage-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(120% 90% at 0% 100%, rgba(244,239,234,0.55) 0%, rgba(244,239,234,0) 44%),linear-gradient(105deg, rgba(244,239,234,0.86) 0%, rgba(244,239,234,0.52) 30%, rgba(244,239,234,0.1) 55%, rgba(244,239,234,0) 74%),linear-gradient(to bottom, rgba(244,239,234,0.32) 0%, rgba(244,239,234,0) 30%, rgba(244,239,234,0) 60%, rgba(244,239,234,0.5) 86%, rgba(244,239,234,0.9) 100%);}
 
   .stage-ui{
     position: relative;
@@ -142,11 +141,11 @@
     padding: 1.75rem var(--gutter) 1.75rem;
   }
 
-  .stage-ui .mono{ text-shadow: 0 1px 14px rgba(0,0,0,0.95), 0 0 3px rgba(0,0,0,0.8); }
+  .stage-ui .mono{ text-shadow: 0 1px 14px rgba(244,239,234,0.95), 0 0 3px rgba(244,239,234,0.8); }
   .masthead{ display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; }
   .masthead .wordmark{ display: grid; gap: 0.35rem; }
   .masthead nav{ display: grid; gap: 0.3rem; justify-items: end; }
-  .masthead nav a{ text-decoration: none; color: var(--mist); transition: color 0.2s ease; }
+  .masthead nav a{ text-decoration: none; color: var(--text-2); transition: color 0.2s ease; }
   .masthead nav a:hover{ color: var(--signal); }
 
   .stage-mid{
@@ -178,10 +177,10 @@
     line-height: 1.3;
     letter-spacing: -0.005em;
     text-transform: none;
-    color: var(--mist);
+    color: var(--text-2);
     margin-bottom: 0.4em;
   }
-  .headlines h1 .slash{ color: var(--mist-dim); }
+  .headlines h1 .slash{ color: var(--text-3); }
   .headlines h1[data-state="b"]{ opacity: 0; transform: translateY(0.7rem); }
   .stage[data-phase="b"] .headlines h1[data-state="a"]{ opacity: 0; transform: translateY(-0.7rem); }
   .stage[data-phase="b"] .headlines h1[data-state="b"]{ opacity: 1; transform: none; }
@@ -195,7 +194,7 @@
     padding-top: 1.5rem;
     border-top: var(--rule);
   }
-  .stage-aside p{ margin: 0; max-width: 42rem; color: var(--paper); font-weight: 500; font-size: var(--step-2); line-height: 1.6; text-shadow: 0 2px 14px rgba(0,0,0,0.9); }
+  .stage-aside p{ margin: 0; max-width: 42rem; color: var(--text); font-weight: 500; font-size: var(--step-2); line-height: 1.6; text-shadow: 0 2px 14px rgba(244,239,234,0.9); }
 
   .stage-foot{ display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 
@@ -206,7 +205,7 @@
     gap: 0.75rem;
     padding: 1.05rem 2rem;
     border: 1px solid var(--signal-dim);
-    background: rgba(0,0,0,0.55);
+    background: rgba(255,255,255,0.6);
     color: var(--signal);
     font-family: "IBM Plex Mono", monospace;
     font-size: var(--step-0);
@@ -217,7 +216,7 @@
     cursor: pointer;
     transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
   }
-  .btn:hover{ background: rgba(233,177,92,0.14); border-color: var(--signal); color: var(--paper); }
+  .btn:hover{ background: rgba(233,177,92,0.14); border-color: var(--signal); color: var(--text); }
   .btn.is-wide{ width: 100%; }
 
   /* ---------- sections ---------- */
@@ -228,7 +227,7 @@
     gap: clamp(1.5rem, 5vw, 4.5rem);
     padding: clamp(3.5rem, 8vw, 6.5rem) var(--gutter);
     border-top: var(--rule);
-    background: var(--ink);
+    background: var(--bg);
     position: relative;
     z-index: 3;
   }
@@ -251,7 +250,7 @@
     letter-spacing: -0.015em;
     text-wrap: pretty;
   }
-  .prose{ margin: 0; max-width: 66ch; color: var(--mist); font-size: var(--step-1); line-height: 1.75; }
+  .prose{ margin: 0; max-width: 66ch; color: var(--text-2); font-size: var(--step-1); line-height: 1.75; }
   .prose + .prose{ margin-top: -1.4rem; }
 
   .figures{
@@ -261,7 +260,7 @@
     background: var(--line);
     border: var(--rule);
   }
-  .figure{ display: grid; gap: 0.5rem; padding: 1.6rem 1.4rem; background: var(--ink); }
+  .figure{ display: grid; gap: 0.5rem; padding: 1.6rem 1.4rem; background: var(--bg); }
   .figure .value{
     font-size: var(--step-4);
     font-weight: 700;
@@ -269,7 +268,7 @@
     letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
   }
-  .figure .caption{ color: var(--mist); font-size: var(--step-1); line-height: 1.45; }
+  .figure .caption{ color: var(--text-2); font-size: var(--step-1); line-height: 1.45; }
 
   .chart{ display: grid; gap: 1.4rem; max-width: 44rem; }
   .chart-title{ display: grid; gap: 0.4rem; padding-bottom: 1.1rem; border-bottom: var(--rule); }
@@ -281,7 +280,7 @@
     align-items: center;
     gap: 1rem;
   }
-  .bar-row dt{ font-size: var(--step-1); color: var(--paper); }
+  .bar-row dt{ font-size: var(--step-1); color: var(--text); }
   .bar-row dd{ margin: 0; }
   .bar-track{ position: relative; height: 10px; background: var(--line-soft); border-radius: 2px; }
   .bar-fill{ height: 100%; border-radius: 0 4px 4px 0; background: var(--signal-dim); }
@@ -292,9 +291,9 @@
     font-size: var(--step-1);
     font-variant-numeric: tabular-nums;
     text-align: right;
-    color: var(--paper);
+    color: var(--text);
   }
-  .chart-note{ margin: 0; color: var(--mist-dim); font-size: var(--step-0); line-height: 1.6; max-width: 60ch; }
+  .chart-note{ margin: 0; color: var(--text-3); font-size: var(--step-0); line-height: 1.6; max-width: 60ch; }
 
   .spread{ display: grid; gap: 0; border-top: var(--rule); }
   .spread div{
@@ -322,7 +321,12 @@
     border-bottom: var(--rule);
   }
   .items h3{ margin: 0 0 0.4rem; font-size: var(--step-2); font-weight: 500; letter-spacing: -0.01em; }
-  .items p{ margin: 0; color: var(--mist); font-size: var(--step-1); line-height: 1.65; max-width: 58ch; }
+  .items p{ margin: 0; color: var(--text-2); font-size: var(--step-1); line-height: 1.65; max-width: 58ch; }
+
+  /* Grid and flex items default to min-width:auto, which means a wide child -
+     the pricing tiers - can force its whole column wider than the screen and
+     make the entire page scroll sideways on a phone. This lets them shrink. */
+  .band > *, .band-body, .tiers, .founding-note, .closer > *, .stage-ui{ min-width: 0; }
 
   .tiers{
     display: grid;
@@ -331,8 +335,8 @@
     background: var(--line);
     border: var(--rule);
   }
-  .tier{ display: grid; gap: 0.75rem; align-content: start; padding: 1.9rem 1.6rem; background: var(--ink); }
-  .tier.is-featured{ background: var(--ink-raised); }
+  .tier{ display: grid; gap: 0.75rem; align-content: start; padding: 1.9rem 1.6rem; background: var(--bg); }
+  .tier.is-featured{ background: var(--bg-raised); }
   .tier .price{
     font-size: var(--step-4);
     font-weight: 700;
@@ -340,8 +344,8 @@
     letter-spacing: -0.04em;
     font-variant-numeric: tabular-nums;
   }
-  .tier .price small{ font-size: var(--step-1); font-weight: 400; letter-spacing: 0; color: var(--mist); }
-  .tier p{ margin: 0; color: var(--mist); font-size: var(--step-1); line-height: 1.6; }
+  .tier .price small{ font-size: var(--step-1); font-weight: 400; letter-spacing: 0; color: var(--text-2); }
+  .tier p{ margin: 0; color: var(--text-2); font-size: var(--step-1); line-height: 1.6; }
   .tier .btn{ margin-top: 0.5rem; }
 
   .closer{
@@ -350,7 +354,7 @@
     justify-items: start;
     padding: clamp(4rem, 10vw, 7rem) var(--gutter);
     border-top: var(--rule);
-    background: var(--ink);
+    background: var(--bg);
     position: relative;
     z-index: 3;
   }
@@ -368,39 +372,16 @@
     display: grid;
     gap: 1rem;
     padding: 2.25rem var(--gutter) 3rem;
-    background: var(--ink);
+    background: var(--bg);
     position: relative;
     z-index: 3;
     border-top: var(--rule);
   }
-  footer p{ margin: 0; max-width: 74ch; color: var(--mist-dim); font-size: var(--step-0); line-height: 1.7; }
+  footer p{ margin: 0; max-width: 74ch; color: var(--text-3); font-size: var(--step-0); line-height: 1.7; }
 
-  @media (max-width: 900px){
-    .stage{ height: 220vh; }
-    .stage-sticky::after{
-      background: linear-gradient(180deg,
-        rgba(0,0,0,0.55) 0%,
-        rgba(0,0,0,0.25) 40%,
-        rgba(0,0,0,0.88) 78%,
-        rgba(0,0,0,0.96) 100%);
-    }
-    .stage-aside{ grid-template-columns: 1fr; align-items: start; }
-    .band{ grid-template-columns: 1fr; }
-    .bar-row{ grid-template-columns: minmax(0, 1fr) 3.5rem; }
-    .bar-row dd.bar-cell{ grid-column: 1 / -1; }
-    .masthead{ flex-direction: column; gap: 1rem; }
-    .masthead nav{ justify-items: start; grid-auto-flow: column; gap: 1.1rem; }
-    .stage-foot{ display: none; }
-    .btn{ width: 100%; }
-  }
+  
 
-  @media (prefers-reduced-motion: reduce){
-    .stage{ height: auto; }
-    .stage-sticky{ position: relative; height: auto; min-height: 0; }
-    .stage-ui{ height: auto; min-height: 88vh; }
-    .headlines h1[data-state="b"]{ display: none; }
-    *{ transition: none !important; }
-  }
+  
 
   .headlines h1 .lead-in{
     display: block;
@@ -409,7 +390,7 @@
     line-height: 1.3;
     letter-spacing: -0.005em;
     text-transform: none;
-    color: var(--mist);
+    color: var(--text-2);
     margin-bottom: 0.4em;
   }
 /* ===== Foresite components ===== */
@@ -420,7 +401,7 @@
     line-height: 1.3;
     letter-spacing: -0.005em;
     text-transform: none;
-    color: var(--mist);
+    color: var(--text-2);
     margin-bottom: 0.4em;
   }
 .scroll-progress{
@@ -444,9 +425,7 @@
     filter: blur(0);
     transform: none;
   }
-  @media (prefers-reduced-motion: reduce){
-    .reveal{ opacity: 1; filter: none; transform: none; transition: none; }
-  }
+  
 
   
 
@@ -454,7 +433,7 @@
     display: inline-flex; align-items: center; justify-content: center; gap: 0.75rem;
     padding: 1.05rem 1.75rem;
     border: 1px solid var(--signal-dim);
-    background: rgba(5,7,10,0.4);
+    background: rgba(255,255,255,0.6);
     color: var(--signal);
     font-family: "IBM Plex Mono", monospace;
     font-size: var(--step-0);
@@ -464,7 +443,7 @@
     cursor: pointer;
     transition: background 0.25s ease, border-color 0.25s ease, color 0.25s ease;
   }
-  .btn:hover{ background: rgba(233,177,92,0.12); border-color: var(--signal); color: var(--paper); }
+  .btn:hover{ background: rgba(233,177,92,0.12); border-color: var(--signal); color: var(--text); }
   .btn.full{ width: 100%; }
   .btn:disabled{ opacity: 0.5; cursor: not-allowed; }
 
@@ -476,7 +455,7 @@
     gap: clamp(1.5rem, 5vw, 4.5rem);
     padding: clamp(3.5rem, 8vw, 6.5rem) var(--gutter);
     border-top: var(--rule);
-    background: var(--ink);
+    background: var(--bg);
     position: relative; z-index: 3;
   }
   .band-head{ display: grid; gap: 0.9rem; align-content: start; }
@@ -494,8 +473,8 @@
     font-size: var(--step-4); font-weight: 800; letter-spacing: -0.03em;
     color: var(--signal); line-height: 1; flex-shrink: 0;
   }
-  .stat-caption{ margin: 0 0 0.4rem; color: var(--paper); font-weight: 500; font-size: var(--step-1); line-height: 1.5; }
-  .stat-source{ color: var(--mist-dim); }
+  .stat-caption{ margin: 0 0 0.4rem; color: var(--text); font-weight: 500; font-size: var(--step-1); line-height: 1.5; }
+  .stat-source{ color: var(--text-3); }
 
   /* ---------- timeline ---------- */
 
@@ -519,9 +498,9 @@
   }
   .timeline-year{ display: inline-block; color: var(--signal); margin-bottom: 0.5rem; }
   .timeline-item h3{ margin: 0 0 0.45rem; font-size: var(--step-2); font-weight: 600; letter-spacing: -0.01em; }
-  .timeline-item p{ margin: 0; color: var(--mist); font-weight: 500; font-size: var(--step-1); line-height: 1.6; }
+  .timeline-item p{ margin: 0; color: var(--text-2); font-weight: 500; font-size: var(--step-1); line-height: 1.6; }
   .timeline-item.is-next h3{ color: var(--signal); }
-  .prose{ margin: 0; max-width: 66ch; color: var(--mist); font-weight: 500; font-size: var(--step-1); line-height: 1.75; }
+  .prose{ margin: 0; max-width: 66ch; color: var(--text-2); font-weight: 500; font-size: var(--step-1); line-height: 1.75; }
   .prose + .prose{ margin-top: -1.4rem; }
 
   /* ---------- feature figures ---------- */
@@ -531,10 +510,10 @@
     grid-template-columns: repeat(auto-fit, minmax(13rem, 1fr));
     gap: 1px; background: var(--line); border: var(--rule);
   }
-  .figure{ display: grid; gap: 0.6rem; padding: 1.8rem 1.5rem; background: var(--ink); transition: background-color 0.3s ease; }
-  .figure:hover{ background: var(--ink-raised); }
+  .figure{ display: grid; gap: 0.6rem; padding: 1.8rem 1.5rem; background: var(--bg); transition: background-color 0.3s ease; }
+  .figure:hover{ background: var(--bg-raised); }
   .figure .value{ font-size: var(--step-3); font-weight: 700; line-height: 1.1; letter-spacing: -0.02em; }
-  .figure .caption{ color: var(--mist); font-weight: 500; font-size: var(--step-1); line-height: 1.5; }
+  .figure .caption{ color: var(--text-2); font-weight: 500; font-size: var(--step-1); line-height: 1.5; }
 
   /* ---------- process ---------- */
 
@@ -548,28 +527,28 @@
   }
   .step:last-child{ border-bottom: none; }
   .step{ transition: background-color 0.3s ease; }
-  .step:hover{ background: var(--ink-raised); }
+  .step:hover{ background: var(--bg-raised); }
   .step .num{ font-family: "IBM Plex Mono", monospace; color: var(--signal-dim); font-size: var(--step-2); }
   .step h3{ margin: 0 0 0.35rem; font-size: var(--step-2); font-weight: 500; letter-spacing: -0.01em; }
-  .step p{ margin: 0; color: var(--mist); font-weight: 500; font-size: var(--step-1); line-height: 1.6; max-width: 56ch; }
+  .step p{ margin: 0; color: var(--text-2); font-weight: 500; font-size: var(--step-1); line-height: 1.6; max-width: 56ch; }
 
   /* ---------- pricing ---------- */
 
   .tiers{ display: grid; grid-template-columns: repeat(auto-fit, minmax(15rem, 1fr)); gap: 1px; background: var(--line); border: var(--rule); max-width: 48rem; }
-  .tier{ display: grid; gap: 1rem; align-content: start; padding: 2rem 1.75rem; background: var(--ink); transition: background-color 0.3s ease, border-color 0.3s ease; }
-  .tier:hover{ background: var(--ink-raised); }
-  .tier.is-featured{ background: var(--ink-raised); }
-  .tier.is-featured:hover{ background: var(--ink-raised); box-shadow: inset 0 0 0 1px var(--signal-dim); }
+  .tier{ display: grid; gap: 1rem; align-content: start; padding: 2rem 1.75rem; background: var(--bg); transition: background-color 0.3s ease, border-color 0.3s ease; }
+  .tier:hover{ background: var(--bg-raised); }
+  .tier.is-featured{ background: var(--bg-raised); }
+  .tier.is-featured:hover{ background: var(--bg-raised); box-shadow: inset 0 0 0 1px var(--signal-dim); }
   .tier .price{ font-size: var(--step-4); font-weight: 700; letter-spacing: -0.03em; }
-  .tier .price small{ font-family: "IBM Plex Mono", monospace; font-size: var(--step-0); font-weight: 400; color: var(--mist-dim); text-transform: uppercase; letter-spacing: 0.1em; }
-  .tier p{ margin: 0; color: var(--mist); font-weight: 500; font-size: var(--step-1); line-height: 1.6; }
+  .tier .price small{ font-family: "IBM Plex Mono", monospace; font-size: var(--step-0); font-weight: 400; color: var(--text-3); text-transform: uppercase; letter-spacing: 0.1em; }
+  .tier p{ margin: 0; color: var(--text-2); font-weight: 500; font-size: var(--step-1); line-height: 1.6; }
   .tier ul{ margin: 0; padding: 0; list-style: none; display: grid; gap: 0.55rem; }
-  .tier li{ color: var(--mist); font-weight: 500; font-size: var(--step-1); line-height: 1.45; padding-left: 1rem; position: relative; }
-  .tier li::before{ content: "–"; position: absolute; left: 0; color: var(--mist-dim); }
+  .tier li{ color: var(--text-2); font-weight: 500; font-size: var(--step-1); line-height: 1.45; padding-left: 1rem; position: relative; }
+  .tier li::before{ content: "–"; position: absolute; left: 0; color: var(--text-3); }
   .tier .care-select{ margin-top: 0.4rem; }
-  .tier-note{ margin: 1.2rem 0 0; max-width: 44rem; color: var(--mist-dim); font-size: var(--step-0); line-height: 1.6; }
+  .tier-note{ margin: 1.2rem 0 0; max-width: 44rem; color: var(--text-3); font-size: var(--step-0); line-height: 1.6; }
   .founding-note{ display: grid; gap: 0.7rem; max-width: 48rem; margin-bottom: 2rem; padding: 1.4rem 1.6rem; border: var(--rule); border-left: 3px solid var(--signal); }
-  .founding-note p{ margin: 0; color: var(--paper); font-weight: 500; font-size: var(--step-1); line-height: 1.65; }
+  .founding-note p{ margin: 0; color: var(--text); font-weight: 500; font-size: var(--step-1); line-height: 1.65; }
 
   /* ---------- closer + form ---------- */
 
@@ -582,18 +561,18 @@
   }
   .closer-intro{ display: grid; gap: 1.2rem; align-content: start; }
   .closer-intro h2{ margin: 0; font-size: var(--step-4); font-weight: 700; letter-spacing: -0.025em; line-height: 1.08; text-wrap: balance; }
-  .closer-intro p{ margin: 0; color: var(--mist); font-weight: 500; font-size: var(--step-1); line-height: 1.7; max-width: 40ch; }
+  .closer-intro p{ margin: 0; color: var(--text-2); font-weight: 500; font-size: var(--step-1); line-height: 1.7; max-width: 40ch; }
   .closer-intro .direct{ padding-top: 0.6rem; border-top: var(--rule); font-size: var(--step-1); }
   .closer-intro .direct a{ color: var(--signal); text-decoration: none; }
   .closer-intro .direct a:hover{ text-decoration: underline; }
 
   form{ display: grid; gap: 1.1rem; }
   .field{ display: grid; gap: 0.5rem; }
-  .field label{ font-family: "IBM Plex Mono", monospace; font-size: var(--step-0); letter-spacing: 0.12em; text-transform: uppercase; color: var(--mist-dim); }
+  .field label{ font-family: "IBM Plex Mono", monospace; font-size: var(--step-0); letter-spacing: 0.12em; text-transform: uppercase; color: var(--text-3); }
   .field input, .field textarea{
-    background: var(--ink-raised);
+    background: var(--bg-raised);
     border: var(--rule);
-    color: var(--paper);
+    color: var(--text);
     font-family: "Archivo", sans-serif;
     font-size: var(--step-1);
     padding: 0.85rem 1rem;
@@ -603,8 +582,8 @@
   .field input:focus, .field textarea:focus{ border-color: var(--signal-dim); }
   .form-status{ min-height: 1.4rem; font-size: var(--step-1); }
   .form-status.ok{ color: var(--good); }
-  .form-status.err{ color: #C97A6A; }
-  .form-privacy{ margin: 0.2rem 0 0; color: var(--mist-dim); font-size: var(--step-0); line-height: 1.5; }
+  .form-status.err{ color: #A3301E; }
+  .form-privacy{ margin: 0.2rem 0 0; color: var(--text-3); font-size: var(--step-0); line-height: 1.5; }
 
   footer{
     padding: 2.5rem var(--gutter) 3rem;
@@ -612,10 +591,54 @@
     display: grid; gap: 0.8rem;
     max-width: 70ch;
   }
-  footer p{ margin: 0; color: var(--mist-dim); font-size: var(--step-0); line-height: 1.65; }
+  footer p{ margin: 0; color: var(--text-3); font-size: var(--step-0); line-height: 1.65; }
 
-  
+  /* ---------------------------------------------------------------
+     Media queries live at the END of the stylesheet on purpose. The rules
+     above are declared twice - a base pass and a components pass - and CSS
+     applies the last matching rule of equal specificity. When these blocks
+     sat in the middle, the components pass below them silently overrode every
+     responsive rule, so phones were served the desktop two-column layout and
+     the page scrolled sideways. Keep them last.
+     --------------------------------------------------------------- */
 
+@media (prefers-reduced-motion: reduce){
+    .hero-eye-img{ animation: none; }
+  }
+
+@media (max-width: 900px){
+    .stage{ height: 220vh; }
+    .stage-sticky::after{
+      background: linear-gradient(180deg,
+        rgba(244,239,234,0.55) 0%,
+        rgba(244,239,234,0.25) 40%,
+        rgba(244,239,234,0.88) 78%,
+        rgba(244,239,234,0.96) 100%);
+    }
+    .stage-aside{ grid-template-columns: 1fr; align-items: start; }
+    .band{ grid-template-columns: 1fr; }
+    .bar-row{ grid-template-columns: minmax(0, 1fr) 3.5rem; }
+    .bar-row dd.bar-cell{ grid-column: 1 / -1; }
+    .masthead{ flex-direction: column; gap: 1rem; }
+    .masthead nav{ justify-items: start; grid-auto-flow: column; gap: 1.1rem; }
+    .stage-foot{ display: none; }
+    .tiers{ grid-template-columns: 1fr; }
+    .closer{ grid-template-columns: 1fr; }
+    #contact-form{ width: 100%; }
+    .btn{ width: 100%; }
+  }
+
+@media (prefers-reduced-motion: reduce){
+    .stage{ height: auto; }
+    .stage-sticky{ position: relative; height: auto; min-height: 0; }
+    .stage-ui{ height: auto; min-height: 88vh; }
+    .headlines h1[data-state="b"]{ display: none; }
+    *{ transition: none !important; }
+  }
+
+@media (prefers-reduced-motion: reduce){
+    .reveal{ opacity: 1; filter: none; transform: none; transition: none; }
+  }
 </style>
 
 <section class="stage" id="stage" data-phase="a">
@@ -626,7 +649,7 @@
 
       <header class="masthead">
         <div class="wordmark">
-          <span class="mono" style="color:var(--paper)">FORESITE</span>
+          <span class="mono" style="color:var(--text)">FORESITE</span>
           <span class="mono">Websites &middot; built to be found</span>
         </div>
         <nav aria-label="Sections">
@@ -1021,6 +1044,12 @@
   var DW = 1440, DH = 810;             // every frame is this 16:9 scene
   var EYE_X = 675, EYE_Y = 405;        // centre of the eye, for framing
   var SAFE_W = 920, SAFE_H = 640;      // must never be cropped
+  // How much of the panel the video fills. The source is an extreme macro of
+  // an eye, so filling the panel entirely reads as very close. Below 1 the
+  // frame is inset, with the page's black around it.
+  var FIT = 0.88;
+  // Fraction of the frame's short side that fades out at each edge.
+  var FEATHER = 0.12;
 
   var BLINK_N = 28, GAZE_N = 25, EXPL_N = 27;
   var BLINK_CUT = 24;                  // frames 0-23 are the blink itself
@@ -1081,7 +1110,7 @@
   var blinkIndex = 0, blinkAt = 0;
   var gazeTX = 0, gazeTY = 0;          // where the cursor is, -1..1
   var gazeIdx = 0, gazeShown = -1;     // position within the gaze run
-  var tiltY = 0;
+  var tiltX = 0, tiltY = 0;
   var scrollP = 0, explIndex = 0, lastExplIndex = -1;
   var dirty = true;
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
@@ -1148,9 +1177,9 @@
     // video - a phone held upright - fitting it whole would leave a thin
     // letterboxed strip, so grow it until it fills a reasonable share of the
     // panel, cropping forehead and cheek but never the eye itself.
-    var kFit  = Math.min(cw / DW, ch / DH);
+    var kFit  = Math.min(cw / DW, ch / DH) * FIT;
     var kSafe = Math.min(cw / SAFE_W, ch / SAFE_H);
-    k = Math.min(kSafe, Math.max(kFit, ch * 0.55 / DH));
+    k = Math.min(kSafe, Math.max(kFit, ch * 0.55 / DH * FIT));
     ox = place(cw, DW, EYE_X);
     oy = place(ch, DH, EYE_Y);
     dirty = true;
@@ -1160,10 +1189,33 @@
   function ready(im) { return im && im.complete && im.naturalWidth; }
   function plate(im) { if (ready(im)) ctx.drawImage(im, ox, oy, DW * k, DH * k); }
 
+  // Soften the edges of the frame so it dissolves into the page instead of
+  // ending on a hard rectangle. Without this an inset frame reads as a mistake.
+  function feather() {
+    if (FEATHER <= 0) return;
+    var x0 = ox, y0 = oy, w = DW * k, h = DH * k;
+    var f = Math.min(w, h) * FEATHER;
+    var solid = 'rgba(244,239,234,1)', clear = 'rgba(244,239,234,0)', g;
+    ctx.globalCompositeOperation = 'destination-out';
+    g = ctx.createLinearGradient(x0, 0, x0 + f, 0);
+    g.addColorStop(0, solid); g.addColorStop(1, clear);
+    ctx.fillStyle = g; ctx.fillRect(x0, y0, f, h);
+    g = ctx.createLinearGradient(x0 + w, 0, x0 + w - f, 0);
+    g.addColorStop(0, solid); g.addColorStop(1, clear);
+    ctx.fillStyle = g; ctx.fillRect(x0 + w - f, y0, f, h);
+    g = ctx.createLinearGradient(0, y0, 0, y0 + f);
+    g.addColorStop(0, solid); g.addColorStop(1, clear);
+    ctx.fillStyle = g; ctx.fillRect(x0, y0, w, f);
+    g = ctx.createLinearGradient(0, y0 + h, 0, y0 + h - f);
+    g.addColorStop(0, solid); g.addColorStop(1, clear);
+    ctx.fillStyle = g; ctx.fillRect(x0, y0 + h - f, w, f);
+    ctx.globalCompositeOperation = 'source-over';
+  }
+
   function render() {
     ctx.clearRect(0, 0, cw, ch);
-    if (state === 'human') { plate(human); return; }
-    if (state === 'blink') { plate(blink[Math.min(blinkIndex, BLINK_N - 1)]); return; }
+    if (state === 'human') { plate(human); feather(); return; }
+    if (state === 'blink') { plate(blink[Math.min(blinkIndex, BLINK_N - 1)]); feather(); return; }
 
     var g = gaze[clamp(Math.round(gazeIdx), 0, GAZE_N - 1)];
     if (explIndex > 0 && explReady && ready(expl[explIndex - 1])) {
@@ -1176,6 +1228,7 @@
     } else {
       plate(g);
     }
+    feather();
   }
 
   /* -------------------------------- loop -------------------------------- */
@@ -1201,12 +1254,16 @@
       var shown = clamp(Math.round(gazeIdx), 0, GAZE_N - 1);
       if (shown !== gazeShown) { gazeShown = shown; if (explIndex === 0) dirty = true; }
 
-      // The video only moves the eye sideways, so vertical cursor movement
-      // gets a gentle parallax of the whole image instead.
-      var ny = tiltY + (ty - tiltY) * 0.08;
-      if (Math.abs(ny - tiltY) > 0.002) {
-        tiltY = ny;
-        canvas.style.transform = 'translateY(' + (tiltY * 7).toFixed(2) + 'px)';
+      // A small drift of the whole image, toward the cursor, on top of the real
+      // eye movement in the frames. It makes the tracking read more strongly
+      // without faking anything, and it is the only vertical response there is
+      // - the video moves the eye sideways only.
+      var nx2 = tiltX + (tx - tiltX) * 0.08;
+      var ny  = tiltY + (ty - tiltY) * 0.08;
+      if (Math.abs(nx2 - tiltX) > 0.002 || Math.abs(ny - tiltY) > 0.002) {
+        tiltX = nx2; tiltY = ny;
+        canvas.style.transform = 'translate(' + (tiltX * 13).toFixed(2) + 'px,'
+                                              + (tiltY * 8).toFixed(2) + 'px)';
       }
     }
 

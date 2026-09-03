@@ -77,6 +77,35 @@ _Last updated: 3 September 2026_
 - **The hero keeps scroll travel on phones.** It previously collapsed to one screen tall
   below 900px wide, which left no room for the explosion to play. Now 220vh.
 
+- **The site is light, not dark.** The video's own edges are pale - warm skin on the left,
+  light grey on the right, averaging about `#BEB1AE`. Against black the frame always ended
+  on a visible edge, however it was feathered. Against a warm off-white it dissolves. The
+  page background is `#F4EFEA`, and the hero frame is inset slightly (`FIT` in the script)
+  with its edges faded out (`FEATHER`), so the footage melts into the page rather than
+  sitting on top of it.
+
+  The colour tokens were **renamed, not just re-valued**: `--ink` now means the page
+  background and `--paper` the text, which would have read backwards on a light site.
+  They are `--bg`, `--bg-raised`, `--text`, `--text-2`, `--text-3`, plus `--line`,
+  `--line-soft`, `--signal`, `--signal-dim`, `--shut` and `--good`.
+
+  Every foreground/background pair was checked against WCAG AA and adjusted until it
+  passed: body text 16.4:1, secondary 7.7:1, small mono labels 5.1:1, the gold accent
+  5.3:1 (it had to darken from `#E9B15C` to `#8F5409` to clear 4.5:1 on a light ground),
+  button borders 3.3:1. Rules and hairlines sit below that deliberately - they are
+  decoration, not information.
+
+- **Media queries live at the END of the stylesheet, and must stay there.** The stylesheet
+  declares its layout rules twice: a base pass and a components pass. The responsive
+  blocks were sitting between the two, so the components pass silently overrode every one
+  of them. **The mobile layout had never actually applied** - phones were being served the
+  desktop two-column grid, and the whole page could be swiped sideways to about 1024px on
+  a 390px screen. Moving the media queries below the components pass fixed it, along with
+  two genuine layout faults it had been masking: grid items default to `min-width: auto`,
+  so the pricing tiers forced their column wider than the screen, and the contact section
+  never collapsed to one column. Verified at 360, 390, 768 and 1500px: no horizontal
+  overflow at any of them.
+
 - **Pricing.** Flat fees ($750 / $1,500) for honesty and simplicity vs hourly. Care plans
   ($100 / $250) are the real recurring value; hosting costs about nothing to deliver.
 
