@@ -120,17 +120,17 @@
     pointer-events: none;
     background:
       linear-gradient(to bottom,
-        rgba(244,239,234,0) 34%,
-        rgba(244,239,234,0.42) 62%,
-        rgba(244,239,234,0.86) 84%,
-        rgba(244,239,234,0.96) 100%),
+        rgba(244,239,234,0.0) 34%,
+        rgba(244,239,234,0.191) 62%,
+        rgba(244,239,234,0.493) 84%,
+        rgba(244,239,234,0.551) 100%),
       linear-gradient(100deg,
-        rgba(244,239,234,0.78) 0%,
-        rgba(244,239,234,0.34) 26%,
-        rgba(244,239,234,0) 52%);
+        rgba(244,239,234,0.355) 0%,
+        rgba(244,239,234,0.155) 26%,
+        rgba(244,239,234,0.0) 52%);
   }
 
-  .stage-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(120% 90% at 0% 100%, rgba(244,239,234,0.55) 0%, rgba(244,239,234,0) 44%),linear-gradient(105deg, rgba(244,239,234,0.86) 0%, rgba(244,239,234,0.52) 30%, rgba(244,239,234,0.1) 55%, rgba(244,239,234,0) 74%),linear-gradient(to bottom, rgba(244,239,234,0.32) 0%, rgba(244,239,234,0) 30%, rgba(244,239,234,0) 60%, rgba(244,239,234,0.5) 86%, rgba(244,239,234,0.9) 100%);}
+  .stage-veil{position:absolute;inset:0;z-index:1;pointer-events:none;background:radial-gradient(120% 90% at 0% 100%, rgba(244,239,234,0.251) 0%, rgba(244,239,234,0.0) 44%),linear-gradient(105deg, rgba(244,239,234,0.493) 0%, rgba(244,239,234,0.237) 30%, rgba(244,239,234,0.045) 55%, rgba(244,239,234,0.0) 74%),linear-gradient(to bottom, rgba(244,239,234,0.146) 0%, rgba(244,239,234,0.0) 30%, rgba(244,239,234,0.0) 60%, rgba(244,239,234,0.227) 86%, rgba(244,239,234,0.517) 100%);}
 
   .stage-ui{
     position: relative;
@@ -141,7 +141,7 @@
     padding: 1.75rem var(--gutter) 1.75rem;
   }
 
-  .stage-ui .mono{ text-shadow: 0 1px 14px rgba(244,239,234,0.95), 0 0 3px rgba(244,239,234,0.8); }
+  .stage-ui .mono{ text-shadow: 0 1px 14px rgba(244,239,234,0.545), 0 0 3px rgba(244,239,234,0.364); }
   .masthead{ display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; }
   .masthead .wordmark{ display: grid; gap: 0.35rem; }
   .masthead nav{ display: grid; gap: 0.3rem; justify-items: end; }
@@ -194,7 +194,7 @@
     padding-top: 1.5rem;
     border-top: var(--rule);
   }
-  .stage-aside p{ margin: 0; max-width: 42rem; color: var(--text); font-weight: 500; font-size: var(--step-2); line-height: 1.6; text-shadow: 0 2px 14px rgba(244,239,234,0.9); }
+  .stage-aside p{ margin: 0; max-width: 42rem; color: var(--text); font-weight: 500; font-size: var(--step-2); line-height: 1.6; text-shadow: 0 2px 14px rgba(244,239,234,0.517); }
 
   .stage-foot{ display: flex; align-items: center; justify-content: space-between; gap: 1rem; }
 
@@ -610,10 +610,10 @@
     .stage{ height: 220vh; }
     .stage-sticky::after{
       background: linear-gradient(180deg,
-        rgba(244,239,234,0.55) 0%,
-        rgba(244,239,234,0.25) 40%,
-        rgba(244,239,234,0.88) 78%,
-        rgba(244,239,234,0.96) 100%);
+        rgba(244,239,234,0.251) 0%,
+        rgba(244,239,234,0.114) 40%,
+        rgba(244,239,234,0.505) 78%,
+        rgba(244,239,234,0.551) 100%);
     }
     .stage-aside{ grid-template-columns: 1fr; align-items: start; }
     .band{ grid-template-columns: 1fr; }
@@ -1020,7 +1020,7 @@
      2. MOVE    on the first mouse move, or a tap, the eye blinks once and
                 reopens cybernetic                         (video 1:00 -> 3:55)
      3. FOLLOW  the eye genuinely looks around in the video: across frames
-                92-108 the pupil sweeps 231px, left to right. Cursor position
+                92-110 the pupil sweeps 303px, left to right. Cursor position
                 scrubs that run, so the eye that follows you is real footage of
                 an eye moving. The sweep is not linear in time - it dwells then
                 flicks - so the cursor maps to the frame index rather than to
@@ -1049,11 +1049,11 @@
   // How much of the panel the video fills. The source is an extreme macro of
   // an eye, so filling the panel entirely reads as very close. Below 1 the
   // frame is inset, with the page's black around it.
-  var FIT = 0.88;
+  var FIT = 0.94;
   // Fraction of the frame's short side that fades out at each edge.
-  var FEATHER = 0.12;
+  var FEATHER = 0.06;
 
-  var BLINK_N = 28, GAZE_N = 17, EXPL_N = 27;
+  var BLINK_N = 28, GAZE_N = 19, EXPL_N = 27;
   var BLINK_CUT = 18;                  // frames 0-23 are the blink itself
   var MS_BLINK = 55, MS_SETTLE = 70;
   var EXPL_ENDS_AT = 0.75;
@@ -1115,6 +1115,7 @@
   var tiltX = 0, tiltY = 0;
   var scrollP = 0, explIndex = 0, lastExplIndex = -1;
   var dirty = true;
+  var mixCanvas = null, mixCtx = null;   // for blending neighbouring gaze frames
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
 
   /* ------------------------- what starts the blink ---------------------- */
@@ -1197,7 +1198,7 @@
     if (FEATHER <= 0) return;
     var x0 = ox, y0 = oy, w = DW * k, h = DH * k;
     var f = Math.min(w, h) * FEATHER;
-    var solid = 'rgba(244,239,234,1)', clear = 'rgba(244,239,234,0)', g;
+    var solid = 'rgba(244,239,234,0.574)', clear = 'rgba(244,239,234,0.0)', g;
     ctx.globalCompositeOperation = 'destination-out';
     g = ctx.createLinearGradient(x0, 0, x0 + f, 0);
     g.addColorStop(0, solid); g.addColorStop(1, clear);
@@ -1219,16 +1220,44 @@
     if (state === 'human') { plate(human); feather(); return; }
     if (state === 'blink') { plate(blink[Math.min(blinkIndex, BLINK_N - 1)]); feather(); return; }
 
-    var g = gaze[clamp(Math.round(gazeIdx), 0, GAZE_N - 1)];
+    // Blend between the two neighbouring frames rather than snapping to the
+    // nearest one. 19 frames over a 303px sweep is a 16px step, which reads as
+    // a stutter when the eye is this large on screen; cross-fading makes the
+    // movement continuous.
+    var i0 = clamp(Math.floor(gazeIdx), 0, GAZE_N - 1);
+    var i1 = clamp(i0 + 1, 0, GAZE_N - 1);
+    var mix = clamp(gazeIdx - i0, 0, 1);
+    // Blending two frames straight onto the screen means two full-size scaled
+    // draws every frame, which drops frames on a large display. Mix them at
+    // their own resolution offscreen first, then scale once.
+    function gazePlate() {
+      if (mix < 0.02 || i1 === i0) { plate(gaze[i0]); return; }
+      if (mix > 0.98) { plate(gaze[i1]); return; }
+      var src = gaze[i0];
+      if (!ready(src)) return;
+      if (!mixCanvas) {
+        mixCanvas = document.createElement('canvas');
+        mixCanvas.width = src.naturalWidth; mixCanvas.height = src.naturalHeight;
+        mixCtx = mixCanvas.getContext('2d');
+      }
+      mixCtx.globalAlpha = 1;
+      mixCtx.drawImage(src, 0, 0, mixCanvas.width, mixCanvas.height);
+      if (ready(gaze[i1])) {
+        mixCtx.globalAlpha = mix;
+        mixCtx.drawImage(gaze[i1], 0, 0, mixCanvas.width, mixCanvas.height);
+        mixCtx.globalAlpha = 1;
+      }
+      ctx.drawImage(mixCanvas, ox, oy, DW * k, DH * k);
+    }
     if (explIndex > 0 && explReady && ready(expl[explIndex - 1])) {
       // Ease into the burst so the jump from the eye run doesn't snap.
       var a = clamp(explIndex / EXPL_FADE, 0, 1);
-      if (a < 1) plate(g);
+      if (a < 1) gazePlate();
       ctx.globalAlpha = a;
       plate(expl[explIndex - 1]);
       ctx.globalAlpha = 1;
     } else {
-      plate(g);
+      gazePlate();
     }
     feather();
   }
@@ -1253,9 +1282,9 @@
       // right, so the cursor maps straight onto it. (The previous clip ran the
       // other way - check which way round a new clip goes before trusting it.)
       var target = ((tx + 1) / 2) * (GAZE_N - 1);
+      var prev = gazeIdx;
       gazeIdx += (target - gazeIdx) * 0.12;
-      var shown = clamp(Math.round(gazeIdx), 0, GAZE_N - 1);
-      if (shown !== gazeShown) { gazeShown = shown; if (explIndex === 0) dirty = true; }
+      if (Math.abs(gazeIdx - prev) > 0.004 && explIndex === 0) dirty = true;
 
       // A small drift of the whole image, toward the cursor, on top of the real
       // eye movement in the frames. It makes the tracking read more strongly
