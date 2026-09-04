@@ -1207,7 +1207,7 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=12';
+  var P = 'frames/', V = '?v=13';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 
@@ -1288,10 +1288,13 @@
   // sits. That is not the visitor moving, so wait for actual travel.
   var seenMove = false, firstPoint = null;
   window.addEventListener('mousemove', function (e) {
-    // Gain. At 2.2 the eye only reached full right with the cursor at 95% of
-    // the window, which felt unresponsive; at 3.6 it gets there by about 78%.
-    gazeTX = clamp((e.clientX / window.innerWidth  - 0.5) * 3.6, -1, 1);
-    gazeTY = clamp((e.clientY / window.innerHeight - 0.5) * 3.6, -1, 1);
+    // Gain: how far the cursor has to travel for the eye to reach its limit.
+    // At 2.2 that took the cursor to 95% of the window, which felt like
+    // dragging the eye by the edge of the screen. At 5.0 the whole sweep
+    // happens between roughly a third and two thirds of the way across, and
+    // the outer thirds simply hold the eye at its limit.
+    gazeTX = clamp((e.clientX / window.innerWidth  - 0.5) * 5.0, -1, 1);
+    gazeTY = clamp((e.clientY / window.innerHeight - 0.5) * 5.0, -1, 1);
     if (!seenMove) {
       if (!firstPoint) { firstPoint = { x: e.clientX, y: e.clientY }; return; }
       if (Math.abs(e.clientX - firstPoint.x) + Math.abs(e.clientY - firstPoint.y) < 3) return;
@@ -1472,7 +1475,8 @@
       if (now >= holdUntil) {
         var targetPos = GAZE_POS[0] + ((tx + 1) / 2) * (GAZE_POS[GAZE_N - 1] - GAZE_POS[0]);
         var prev = gazePos;
-        gazePos += (targetPos - gazePos) * 0.12;
+        // How fast the eye catches up to the cursor. 0.12 lagged noticeably.
+        gazePos += (targetPos - gazePos) * 0.18;
         if (Math.abs(gazePos - prev) > 0.15 && explIndex === 0) dirty = true;
       }
 
