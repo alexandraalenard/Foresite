@@ -77,6 +77,25 @@ _Last updated: 3 September 2026_
 - **The hero keeps scroll travel on phones.** It previously collapsed to one screen tall
   below 900px wide, which left no room for the explosion to play. Now 220vh.
 
+- **Only the eye rectangle is swapped; everything else is one fixed plate.** This is the
+  single most important thing to understand about the hero.
+
+  The clip's HUD is not stable frame to frame - every readout, circuit trace and arc shifts
+  slightly between consecutive frames. Measured: two frames one apart differ across 15% of
+  the picture, and the difference outside the eye averages 6.5 grey levels. So swapping
+  whole frames to move the eye made the *entire screen* flicker on every step, which is
+  exactly what it looked like.
+
+  Now `eye_base.webp` (source frame 105) supplies the HUD, the face and the lashes and
+  never changes, and only a 680x410 crop around the eye is swapped, feathered 26px at its
+  edges so the join is invisible. Verified: as the cursor sweeps, the only pixels that
+  change lie inside the eye rectangle. Before, the changed region was the whole viewport.
+
+  A bonus: the crops are a fraction of a full frame, so the folder got smaller again.
+
+  The blink's last frame and the plate are 34 video frames apart, so they cross-fade once
+  over 280ms rather than cutting - otherwise the handover jumped 45% of the picture.
+
 - **Never cross-fade between two gaze frames.** It looks like the obvious way to smooth
   the stepping as the eye tracks, and it was tried. It is wrong: the frames show the eye in
   *different positions*, so blending them is a double exposure, not a tween. The pupil,

@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Foresite — Modern websites, built to be found</title>
   <meta name="description" content="Foresite rebuilds outdated small business websites and sets them up to be found — by search engines, by Google Maps, and by AI assistants. Flat-fee builds for Australian local businesses.">
-  <link rel="preload" as="image" href="frames/eye_human.webp?v=7" fetchpriority="high">
+  <link rel="preload" as="image" href="frames/eye_human.webp?v=8" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
@@ -1166,8 +1166,12 @@
   // move at an even rate through the clip, so mapping to frame number put the
   // eye hard left when the cursor was dead centre.
   var GAZE_POS = [777.5, 794.1, 826.0, 869.4, 908.2, 944.7, 976.9, 1008.4, 1045.0, 1080.1];
+  // The eye region, in scene coordinates. Only this rectangle is swapped as the
+  // eye tracks; everything else comes from one fixed plate.
+  var EYE_BOX = { x: 450.0, y: 255.0, w: 510.0, h: 307.5 };
   var FRONT_POS = 921;      // where the blink leaves the eye: looking straight out
   var MS_HOLD = 450;        // a beat of stillness before it starts following you
+  var MS_AIFADE = 280;      // settle from the blink onto the still plate
   var SAFE_W = 920, SAFE_H = 640;      // must never be cropped
   // How much of the panel the video fills. The source is an extreme macro of
   // an eye, so filling the panel entirely reads as very close. Below 1 the
@@ -1193,11 +1197,12 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=7';
+  var P = 'frames/', V = '?v=8';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 
   var human = img('eye_human.webp');
+  var eyeBase = img('eye_base.webp');   // the still plate behind the moving eye
   var blink = [], gaze = [], expl = [], i;
   for (i = 0; i < BLINK_N; i++) blink.push(img('blink_' + pad(i) + '.webp'));
   for (i = 0; i < GAZE_N;  i++) gaze.push(img('gaze_'  + pad(i) + '.webp'));
@@ -1226,7 +1231,7 @@
     });
   }
 
-  whenLoaded([human].concat(blink, gaze), function () {
+  whenLoaded([human, eyeBase].concat(blink, gaze), function () {
     ready1 = true; dirty = true; warm(gaze); warm(blink);
     if (wantsBlink) startBlink();
     for (var k = 0; k < EXPL_N; k++) expl.push(img('expl_' + pad(k) + '.webp'));
@@ -1238,6 +1243,9 @@
   var blinkIndex = 0, blinkAt = 0;
   var gazeTX = 0, gazeTY = 0;          // where the cursor is, -1..1
   var gazePos = 0, holdUntil = 0;   // eased pupil position, in source pixels
+  var gazeShown = -1;               // which frame is currently drawn
+  var aiFadeAt = 0;                 // when the blink handed over
+  var GAZE_DEADBAND = 7;            // source px of hysteresis between frames
   var SRC_TO_DESIGN = 1440 / 1920;  // frames are 1920 wide, the scene box is 1440     // position within the gaze run
   var tiltX = 0, tiltY = 0;
   var scrollP = 0, explIndex = 0, lastExplIndex = -1;
@@ -1356,23 +1364,41 @@
     if (state === 'human') { plate(human); feather(); return; }
     if (state === 'blink') { plate(blink[Math.min(blinkIndex, BLINK_N - 1)]); feather(); return; }
 
-    // Draw the single nearest frame - never a blend of two. The frames show
-    // the eye in DIFFERENT positions, so cross-fading them is a double
-    // exposure, not a tween: the pupil and lashes ghost against themselves and
-    // the whole eye reads as blurred. Instead, pick the closest frame and shift
-    // the whole image by whatever distance is left over. The offset is at most
-    // ~16px and moves the entire picture, so it is invisible - but it lets the
-    // gaze land exactly on the cursor instead of snapping between frames.
-    var gi = 0, gbest = 1e9;
+    // The clip's HUD is not stable frame to frame - every readout and circuit
+    // line shifts slightly - so swapping whole frames to move the eye made the
+    // entire screen flicker. Only the eye rectangle is swapped now; the HUD,
+    // face and lashes all come from one fixed plate and never move.
+    //
+    // Two earlier attempts are worth not repeating. Cross-fading two gaze
+    // frames ghosts the eye against itself - they are different positions, not
+    // a tween. Shifting the whole image by the sub-step remainder keeps the eye
+    // continuous but throws the whole picture around. The eye steps between
+    // positions instead, which is what a real eye does.
+    //
+    // The deadband stops it flickering between two frames when the cursor sits
+    // near the boundary between them.
+    var gi = gazeShown;
+    var gbest = gi < 0 ? 1e9 : Math.abs(GAZE_POS[gi] - gazePos) - GAZE_DEADBAND;
     for (var gj = 0; gj < GAZE_N; gj++) {
       var gd = Math.abs(GAZE_POS[gj] - gazePos);
       if (gd < gbest) { gbest = gd; gi = gj; }
     }
-    var gShift = (gazePos - GAZE_POS[gi]) * SRC_TO_DESIGN;
+    gazeShown = gi;
     function gazePlate() {
-      var im = gaze[gi];
-      if (!ready(im)) return;
-      ctx.drawImage(im, ox + gShift * k, oy, DW * k, DH * k);
+      plate(eyeBase);
+      var im = gaze[gi < 0 ? 0 : gi];
+      if (ready(im)) {
+        ctx.drawImage(im, ox + EYE_BOX.x * k, oy + EYE_BOX.y * k,
+                          EYE_BOX.w * k, EYE_BOX.h * k);
+      }
+      // The blink's last frame and the still plate are 34 video frames apart,
+      // so their HUDs differ. Fade between them once rather than cutting.
+      var ft = aiFadeAt ? (performance.now() - aiFadeAt) / MS_AIFADE : 1;
+      if (ft < 1) {
+        ctx.globalAlpha = 1 - ft;
+        plate(blink[BLINK_N - 1]);
+        ctx.globalAlpha = 1;
+      } else if (aiFadeAt) { aiFadeAt = 0; }
     }
     if (explIndex > 0 && explReady && ready(expl[explIndex - 1])) {
       // Ease into the burst so the jump from the eye run doesn't snap.
@@ -1394,10 +1420,11 @@
       if (now - blinkAt >= step) {
         blinkAt = now; blinkIndex++; dirty = true;
         if (blinkIndex >= BLINK_N) {
-        // Open looking straight out, and stay there for a beat.
-        state = 'ai'; gazePos = FRONT_POS; holdUntil = now + MS_HOLD;
-        onScroll();
-      }
+          // Open looking straight out, and stay there for a beat.
+          state = 'ai'; gazePos = FRONT_POS; holdUntil = now + MS_HOLD;
+          aiFadeAt = now;
+          onScroll();
+        }
       }
     }
 
@@ -1407,9 +1434,6 @@
         tx = Math.sin(now * 0.00037) * 0.65 + Math.sin(now * 0.00091) * 0.25;
         ty = Math.sin(now * 0.00053 + 1.7) * 0.4;
       }
-      // In this clip the run starts with the pupil furthest LEFT and sweeps
-      // right, so the cursor maps straight onto it. (The previous clip ran the
-      // other way - check which way round a new clip goes before trusting it.)
       // Cursor position maps onto where the pupil should sit, and that is then
       // turned into a frame. Centre of screen therefore means centre of eye.
       if (now >= holdUntil) {
@@ -1419,19 +1443,12 @@
         if (Math.abs(gazePos - prev) > 0.15 && explIndex === 0) dirty = true;
       }
 
-      // A small drift of the whole image, toward the cursor, on top of the real
-      // eye movement in the frames. It makes the tracking read more strongly
-      // without faking anything, and it is the only vertical response there is
-      // - the video moves the eye sideways only.
-      var nx2 = tiltX + (tx - tiltX) * 0.08;
-      var ny  = tiltY + (ty - tiltY) * 0.08;
-      if (Math.abs(nx2 - tiltX) > 0.002 || Math.abs(ny - tiltY) > 0.002) {
-        tiltX = nx2; tiltY = ny;
-        canvas.style.transform = 'translate(' + (tiltX * 13).toFixed(2) + 'px,'
-                                              + (tiltY * 8).toFixed(2) + 'px)';
-      }
+      // No whole-image parallax. The eye itself now travels 261px across the
+      // screen, which is plenty of response - and moving the picture as well
+      // just reads as the page wobbling.
     }
 
+    if (aiFadeAt && now - aiFadeAt < MS_AIFADE) dirty = true;
     if (dirty) { dirty = false; render(); }
     requestAnimationFrame(frame);
   }
