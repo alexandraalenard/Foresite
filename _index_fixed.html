@@ -1207,7 +1207,7 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=13';
+  var P = 'frames/', V = '?v=14';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 
@@ -1290,11 +1290,11 @@
   window.addEventListener('mousemove', function (e) {
     // Gain: how far the cursor has to travel for the eye to reach its limit.
     // At 2.2 that took the cursor to 95% of the window, which felt like
-    // dragging the eye by the edge of the screen. At 5.0 the whole sweep
-    // happens between roughly a third and two thirds of the way across, and
-    // the outer thirds simply hold the eye at its limit.
-    gazeTX = clamp((e.clientX / window.innerWidth  - 0.5) * 5.0, -1, 1);
-    gazeTY = clamp((e.clientY / window.innerHeight - 0.5) * 5.0, -1, 1);
+    // dragging the eye by the edge of the screen. At 6.5 the whole sweep
+    // happens across the middle third of the window; outside that the eye
+    // simply holds at its limit, which is what it should be doing anyway.
+    gazeTX = clamp((e.clientX / window.innerWidth  - 0.5) * 6.5, -1, 1);
+    gazeTY = clamp((e.clientY / window.innerHeight - 0.5) * 6.5, -1, 1);
     if (!seenMove) {
       if (!firstPoint) { firstPoint = { x: e.clientX, y: e.clientY }; return; }
       if (Math.abs(e.clientX - firstPoint.x) + Math.abs(e.clientY - firstPoint.y) < 3) return;
