@@ -1160,7 +1160,7 @@
   if (!ctx) return;
 
   var DW = 1440, DH = 810;             // every frame is this 16:9 scene
-  var EYE_X = 671, EYE_Y = 440;        // centre of the eye, for framing
+  var EYE_X = 671, EYE_Y = 441;        // centre of the eye, for framing
   // Where the pupil actually sits in each gaze frame, measured off the video.
   // The cursor maps onto THIS, not onto the frame number - the eye does not
   // move at an even rate through the clip, so mapping to frame number put the
@@ -1172,7 +1172,7 @@
   // hard left. Sharpness was measured as the variance of the Laplacian in a
   // ring around the pupil: mid-flick frames score under 200, these score
   // 1000-1700. See build3.py for how the set was chosen.
-  var GAZE_POS = [747.6, 769.3, 797.6, 855.4, 889.5, 939.3, 961.0];
+  var GAZE_POS = [747.3, 777.7, 797.6, 855.4, 899.1, 939.3, 969.1];
   var FRONT_POS = 855.4;   // where the blink leaves the eye: looking straight out
   var MS_HOLD = 450;        // a beat of stillness before it starts following you
   var MS_AIFADE = 280;      // settle from the blink onto the still plate
@@ -1184,18 +1184,20 @@
   // Fraction of the frame's short side that fades out at each edge.
   var FEATHER = 0.03;
 
-  var BLINK_N = 26, GAZE_N = 7, EXPL_N = 26;
-  var BLINK_CUT = 22;                  // after this index the blink settles
+  var BLINK_N = 38, GAZE_N = 7, EXPL_N = 50;
+  var BLINK_CUT = 33;                  // after this index the blink settles
   // MS_SETTLE covers the bridge between the blink and the gaze run. It is
   // deliberately quick: the visitor has no control until it finishes, so a
   // leisurely one makes the hero feel like it is playing at them.
-  var MS_BLINK = 55, MS_SETTLE = 32;
+  // The blink uses every source frame now, so play it at the video's own
+  // 24fps (42ms). At 55ms it stepped.
+  var MS_BLINK = 42, MS_SETTLE = 30;
   var EXPL_ENDS_AT = 0.75;
   // The burst is the only piece still taken from the FIRST clip - the second
   // one has no explosion. It is cut in at the frame where the sparks have
   // already swallowed the iris, and faded over four indices, so the join lands
   // on white particles rather than on a visibly different eye.
-  var EXPL_FADE = 4;                   // indices over which the burst fades in
+  var EXPL_FADE = 8;                   // indices over which the burst fades in
 
   var mq = window.matchMedia;
   var reduce = mq && mq('(prefers-reduced-motion: reduce)').matches;
@@ -1205,7 +1207,7 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=11';
+  var P = 'frames/', V = '?v=12';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 
@@ -1252,7 +1254,9 @@
   var gazePos = 0, holdUntil = 0;   // eased pupil position, in source pixels
   var gazeShown = -1;               // which frame is currently drawn
   var aiFadeAt = 0;                 // when the blink handed over
-  var GAZE_DEADBAND = 7;            // source px of hysteresis between frames
+  var GAZE_DEADBAND = 4;            // source px of hysteresis between frames
+  var MS_GAZEFADE = 90;             // dissolve when the shown frame changes
+  var gazePrev = -1, gazeSwapAt = 0;
   var SRC_TO_DESIGN = 1440 / 1920;  // frames are 1920 wide, the scene box is 1440     // position within the gaze run
   var tiltX = 0, tiltY = 0;
   var scrollP = 0, explIndex = 0, lastExplIndex = -1;
@@ -1284,8 +1288,10 @@
   // sits. That is not the visitor moving, so wait for actual travel.
   var seenMove = false, firstPoint = null;
   window.addEventListener('mousemove', function (e) {
-    gazeTX = clamp((e.clientX / window.innerWidth  - 0.5) * 2.2, -1, 1);
-    gazeTY = clamp((e.clientY / window.innerHeight - 0.5) * 2.2, -1, 1);
+    // Gain. At 2.2 the eye only reached full right with the cursor at 95% of
+    // the window, which felt unresponsive; at 3.6 it gets there by about 78%.
+    gazeTX = clamp((e.clientX / window.innerWidth  - 0.5) * 3.6, -1, 1);
+    gazeTY = clamp((e.clientY / window.innerHeight - 0.5) * 3.6, -1, 1);
     if (!seenMove) {
       if (!firstPoint) { firstPoint = { x: e.clientX, y: e.clientY }; return; }
       if (Math.abs(e.clientX - firstPoint.x) + Math.abs(e.clientY - firstPoint.y) < 3) return;
@@ -1398,8 +1404,25 @@
       var gd = Math.abs(GAZE_POS[gj] - gazePos);
       if (gd < gbest) { gbest = gd; gi = gj; }
     }
+    if (gi !== gazeShown && gazeShown >= 0) {
+      gazePrev = gazeShown; gazeSwapAt = performance.now();
+    }
     gazeShown = gi;
     function gazePlate() {
+      // A short, time-based dissolve when the shown frame changes. This is NOT
+      // the position-based cross-fade that was tried and removed - that held a
+      // permanent 50/50 mix of two eye positions and ghosted. This one always
+      // finishes, so at rest you are always looking at one clean frame; while
+      // it runs it reads as the motion blur a real eye has when it flicks.
+      var sf = gazeSwapAt ? (performance.now() - gazeSwapAt) / MS_GAZEFADE : 1;
+      if (sf < 1 && gazePrev >= 0) {
+        plate(gaze[gazePrev]);
+        ctx.globalAlpha = sf < 0 ? 0 : sf;
+        plate(gaze[gi < 0 ? 0 : gi]);
+        ctx.globalAlpha = 1;
+        return;
+      }
+      if (gazeSwapAt) gazeSwapAt = 0;
       plate(gaze[gi < 0 ? 0 : gi]);
       // The blink's last frame and the still plate are 34 video frames apart,
       // so their HUDs differ. Fade between them once rather than cutting.
@@ -1459,6 +1482,7 @@
     }
 
     if (aiFadeAt && now - aiFadeAt < MS_AIFADE) dirty = true;
+    if (gazeSwapAt && now - gazeSwapAt < MS_GAZEFADE) dirty = true;
     if (dirty) { dirty = false; render(); }
     requestAnimationFrame(frame);
   }
