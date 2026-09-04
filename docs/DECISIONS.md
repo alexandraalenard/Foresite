@@ -77,6 +77,36 @@ _Last updated: 3 September 2026_
 - **The hero keeps scroll travel on phones.** It previously collapsed to one screen tall
   below 900px wide, which left no room for the explosion to play. Now 220vh.
 
+- **Never cross-fade between two gaze frames.** It looks like the obvious way to smooth
+  the stepping as the eye tracks, and it was tried. It is wrong: the frames show the eye in
+  *different positions*, so blending them is a double exposure, not a tween. The pupil,
+  the iris rings and the lashes all ghost against themselves, and because the eye sits at a
+  fractional position at rest it stayed permanently doubled - which reads as the whole hero
+  going blurry the moment the blink ends.
+
+  What works instead: draw the single nearest frame, sharp, and shift the whole image
+  horizontally by whatever distance is left over. The offset is never more than about 16px
+  and it moves the entire picture rather than one feature, so it is invisible - but the gaze
+  lands exactly on the cursor instead of snapping between frames. See `gShift` in the
+  script.
+
+- **The cursor maps to pupil POSITION, not to frame number.** The eye does not move at an
+  even rate through the clip - frames 92-102 are eleven near-identical far-left frames, and
+  then it sweeps fast. Mapping the cursor to the frame index therefore put the pupil at 790
+  (hard left) when the cursor was at dead centre, and the eye never rested front-on. The
+  measured pupil x of every gaze frame is stored in `GAZE_POS` and the cursor interpolates
+  against that. Measured after the fix: the pupil travels 261px across the screen, against
+  25px before.
+
+  `GAZE_POS` and `GAZE_N` must always agree. They silently disagreed once - the lookup
+  returned `undefined` and pinned the eye to the last frame - so the build now refuses to
+  save when they do not match.
+
+- **Frames are exported at the source resolution, 1920 wide.** They were 1360, and the hero
+  is shown at around 2000px on a large screen, so everything was being upscaled ~1.5x and
+  read as soft. Dropping the eleven redundant far-left frames paid for the extra size: the
+  folder is smaller than it was at 1360.
+
 - **The site is light, not dark.** The video's own edges are pale - warm skin on the left,
   light grey on the right, averaging about `#BEB1AE`. Against black the frame always ended
   on a visible edge, however it was feathered. Against a warm off-white it dissolves. The

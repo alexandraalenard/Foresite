@@ -1237,11 +1237,11 @@
   var state = 'human', wantsBlink = false;
   var blinkIndex = 0, blinkAt = 0;
   var gazeTX = 0, gazeTY = 0;          // where the cursor is, -1..1
-  var gazeIdx = 0, gazeShown = -1, holdUntil = 0;     // position within the gaze run
+  var gazePos = 0, holdUntil = 0;   // eased pupil position, in source pixels
+  var SRC_TO_DESIGN = 1440 / 1920;  // frames are 1920 wide, the scene box is 1440     // position within the gaze run
   var tiltX = 0, tiltY = 0;
   var scrollP = 0, explIndex = 0, lastExplIndex = -1;
   var dirty = true;
-  var mixCanvas = null, mixCtx = null;   // for blending neighbouring gaze frames
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
   // Turn a wanted pupil position into a (fractional) frame index.
   function idxFor(p) {
@@ -1356,34 +1356,23 @@
     if (state === 'human') { plate(human); feather(); return; }
     if (state === 'blink') { plate(blink[Math.min(blinkIndex, BLINK_N - 1)]); feather(); return; }
 
-    // Blend between the two neighbouring frames rather than snapping to the
-    // nearest one. 19 frames over a 303px sweep is a 16px step, which reads as
-    // a stutter when the eye is this large on screen; cross-fading makes the
-    // movement continuous.
-    var i0 = clamp(Math.floor(gazeIdx), 0, GAZE_N - 1);
-    var i1 = clamp(i0 + 1, 0, GAZE_N - 1);
-    var mix = clamp(gazeIdx - i0, 0, 1);
-    // Blending two frames straight onto the screen means two full-size scaled
-    // draws every frame, which drops frames on a large display. Mix them at
-    // their own resolution offscreen first, then scale once.
+    // Draw the single nearest frame - never a blend of two. The frames show
+    // the eye in DIFFERENT positions, so cross-fading them is a double
+    // exposure, not a tween: the pupil and lashes ghost against themselves and
+    // the whole eye reads as blurred. Instead, pick the closest frame and shift
+    // the whole image by whatever distance is left over. The offset is at most
+    // ~16px and moves the entire picture, so it is invisible - but it lets the
+    // gaze land exactly on the cursor instead of snapping between frames.
+    var gi = 0, gbest = 1e9;
+    for (var gj = 0; gj < GAZE_N; gj++) {
+      var gd = Math.abs(GAZE_POS[gj] - gazePos);
+      if (gd < gbest) { gbest = gd; gi = gj; }
+    }
+    var gShift = (gazePos - GAZE_POS[gi]) * SRC_TO_DESIGN;
     function gazePlate() {
-      if (mix < 0.02 || i1 === i0) { plate(gaze[i0]); return; }
-      if (mix > 0.98) { plate(gaze[i1]); return; }
-      var src = gaze[i0];
-      if (!ready(src)) return;
-      if (!mixCanvas) {
-        mixCanvas = document.createElement('canvas');
-        mixCanvas.width = src.naturalWidth; mixCanvas.height = src.naturalHeight;
-        mixCtx = mixCanvas.getContext('2d');
-      }
-      mixCtx.globalAlpha = 1;
-      mixCtx.drawImage(src, 0, 0, mixCanvas.width, mixCanvas.height);
-      if (ready(gaze[i1])) {
-        mixCtx.globalAlpha = mix;
-        mixCtx.drawImage(gaze[i1], 0, 0, mixCanvas.width, mixCanvas.height);
-        mixCtx.globalAlpha = 1;
-      }
-      ctx.drawImage(mixCanvas, ox, oy, DW * k, DH * k);
+      var im = gaze[gi];
+      if (!ready(im)) return;
+      ctx.drawImage(im, ox + gShift * k, oy, DW * k, DH * k);
     }
     if (explIndex > 0 && explReady && ready(expl[explIndex - 1])) {
       // Ease into the burst so the jump from the eye run doesn't snap.
@@ -1406,7 +1395,7 @@
         blinkAt = now; blinkIndex++; dirty = true;
         if (blinkIndex >= BLINK_N) {
         // Open looking straight out, and stay there for a beat.
-        state = 'ai'; gazeIdx = idxFor(FRONT_POS); holdUntil = now + MS_HOLD;
+        state = 'ai'; gazePos = FRONT_POS; holdUntil = now + MS_HOLD;
         onScroll();
       }
       }
@@ -1425,10 +1414,9 @@
       // turned into a frame. Centre of screen therefore means centre of eye.
       if (now >= holdUntil) {
         var targetPos = GAZE_POS[0] + ((tx + 1) / 2) * (GAZE_POS[GAZE_N - 1] - GAZE_POS[0]);
-        var target = idxFor(targetPos);
-        var prev = gazeIdx;
-        gazeIdx += (target - gazeIdx) * 0.12;
-        if (Math.abs(gazeIdx - prev) > 0.004 && explIndex === 0) dirty = true;
+        var prev = gazePos;
+        gazePos += (targetPos - gazePos) * 0.12;
+        if (Math.abs(gazePos - prev) > 0.15 && explIndex === 0) dirty = true;
       }
 
       // A small drift of the whole image, toward the cursor, on top of the real
