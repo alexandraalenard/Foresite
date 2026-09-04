@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Foresite — Modern websites, built to be found</title>
   <meta name="description" content="Foresite rebuilds outdated small business websites and sets them up to be found — by search engines, by Google Maps, and by AI assistants. Flat-fee builds for Australian local businesses.">
-  <link rel="preload" as="image" href="frames/eye_human.webp?v=6" fetchpriority="high">
+  <link rel="preload" as="image" href="frames/eye_human.webp?v=7" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
@@ -1161,6 +1161,13 @@
 
   var DW = 1440, DH = 810;             // every frame is this 16:9 scene
   var EYE_X = 697, EYE_Y = 405;        // centre of the eye, for framing
+  // Where the pupil actually sits in each gaze frame, measured off the video.
+  // The cursor maps onto THIS, not onto the frame number - the eye does not
+  // move at an even rate through the clip, so mapping to frame number put the
+  // eye hard left when the cursor was dead centre.
+  var GAZE_POS = [777.5, 794.1, 826.0, 869.4, 908.2, 944.7, 976.9, 1008.4, 1045.0, 1080.1];
+  var FRONT_POS = 921;      // where the blink leaves the eye: looking straight out
+  var MS_HOLD = 450;        // a beat of stillness before it starts following you
   var SAFE_W = 920, SAFE_H = 640;      // must never be cropped
   // How much of the panel the video fills. The source is an extreme macro of
   // an eye, so filling the panel entirely reads as very close. Below 1 the
@@ -1169,7 +1176,7 @@
   // Fraction of the frame's short side that fades out at each edge.
   var FEATHER = 0.03;
 
-  var BLINK_N = 30, GAZE_N = 19, EXPL_N = 27;
+  var BLINK_N = 24, GAZE_N = 10, EXPL_N = 27;
   var BLINK_CUT = 18;                  // frames 0-23 are the blink itself
   // MS_SETTLE covers the bridge between the blink and the gaze run. It is
   // deliberately quick: the visitor has no control until it finishes, so a
@@ -1186,7 +1193,7 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=6';
+  var P = 'frames/', V = '?v=7';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 
@@ -1230,12 +1237,22 @@
   var state = 'human', wantsBlink = false;
   var blinkIndex = 0, blinkAt = 0;
   var gazeTX = 0, gazeTY = 0;          // where the cursor is, -1..1
-  var gazeIdx = 0, gazeShown = -1;     // position within the gaze run
+  var gazeIdx = 0, gazeShown = -1, holdUntil = 0;     // position within the gaze run
   var tiltX = 0, tiltY = 0;
   var scrollP = 0, explIndex = 0, lastExplIndex = -1;
   var dirty = true;
   var mixCanvas = null, mixCtx = null;   // for blending neighbouring gaze frames
   function clamp(v, a, b) { return v < a ? a : v > b ? b : v; }
+  // Turn a wanted pupil position into a (fractional) frame index.
+  function idxFor(p) {
+    if (p <= GAZE_POS[0]) return 0;
+    for (var i = 0; i < GAZE_POS.length - 1; i++) {
+      if (p <= GAZE_POS[i + 1]) {
+        return i + (p - GAZE_POS[i]) / (GAZE_POS[i + 1] - GAZE_POS[i]);
+      }
+    }
+    return GAZE_POS.length - 1;
+  }
 
   /* ------------------------- what starts the blink ---------------------- */
   function startBlink() {
@@ -1387,7 +1404,11 @@
       var step = blinkIndex < BLINK_CUT ? MS_BLINK : MS_SETTLE;
       if (now - blinkAt >= step) {
         blinkAt = now; blinkIndex++; dirty = true;
-        if (blinkIndex >= BLINK_N) { state = 'ai'; gazeIdx = 0; onScroll(); }
+        if (blinkIndex >= BLINK_N) {
+        // Open looking straight out, and stay there for a beat.
+        state = 'ai'; gazeIdx = idxFor(FRONT_POS); holdUntil = now + MS_HOLD;
+        onScroll();
+      }
       }
     }
 
@@ -1400,10 +1421,15 @@
       // In this clip the run starts with the pupil furthest LEFT and sweeps
       // right, so the cursor maps straight onto it. (The previous clip ran the
       // other way - check which way round a new clip goes before trusting it.)
-      var target = ((tx + 1) / 2) * (GAZE_N - 1);
-      var prev = gazeIdx;
-      gazeIdx += (target - gazeIdx) * 0.12;
-      if (Math.abs(gazeIdx - prev) > 0.004 && explIndex === 0) dirty = true;
+      // Cursor position maps onto where the pupil should sit, and that is then
+      // turned into a frame. Centre of screen therefore means centre of eye.
+      if (now >= holdUntil) {
+        var targetPos = GAZE_POS[0] + ((tx + 1) / 2) * (GAZE_POS[GAZE_N - 1] - GAZE_POS[0]);
+        var target = idxFor(targetPos);
+        var prev = gazeIdx;
+        gazeIdx += (target - gazeIdx) * 0.12;
+        if (Math.abs(gazeIdx - prev) > 0.004 && explIndex === 0) dirty = true;
+      }
 
       // A small drift of the whole image, toward the cursor, on top of the real
       // eye movement in the frames. It makes the tracking read more strongly
