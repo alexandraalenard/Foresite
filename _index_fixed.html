@@ -5,7 +5,30 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Foresite — Modern websites, built to be found</title>
   <meta name="description" content="Foresite rebuilds outdated small business websites and sets them up to be found — by search engines, by Google Maps, and by AI assistants. Flat-fee builds for Australian local businesses.">
-  <link rel="preload" as="image" href="frames/eye_human.webp?v=9" fetchpriority="high">
+  <link rel="preload" as="image" href="frames/eye_human.webp?v=14" fetchpriority="high">
+  <!-- CHANGE BOTH OF THESE the day a real domain goes live. A canonical
+       pointing at the old Vercel address tells Google the real site is a
+       copy of it. Search for "foresite-git-main-bears3" to find them all. -->
+  <link rel="canonical" href="https://foresite-git-main-bears3.vercel.app/">
+
+  <!-- How the link looks when it is pasted into Facebook, LinkedIn, Slack,
+       iMessage or WhatsApp. Without these it shows as bare text. -->
+  <meta property="og:type" content="website">
+  <meta property="og:site_name" content="Foresite">
+  <meta property="og:locale" content="en_AU">
+  <meta property="og:url" content="https://foresite-git-main-bears3.vercel.app/">
+  <meta property="og:title" content="Is your business invisible to AI?">
+  <meta property="og:description" content="Website rebuilds for Australian small businesses — modern, fast, and legible to the tools now doing the recommending. Flat pricing, no lock-in.">
+  <meta property="og:image" content="https://foresite-git-main-bears3.vercel.app/og-image.jpg">
+  <meta property="og:image:width" content="1200">
+  <meta property="og:image:height" content="630">
+  <meta property="og:image:alt" content="A human eye transforming into a cybernetic one, beside the words: is your business invisible to AI?">
+  <meta name="twitter:card" content="summary_large_image">
+  <meta name="twitter:title" content="Is your business invisible to AI?">
+  <meta name="twitter:description" content="Website rebuilds for Australian small businesses — modern, fast, and legible to the tools now doing the recommending.">
+  <meta name="twitter:image" content="https://foresite-git-main-bears3.vercel.app/og-image.jpg">
+  <meta name="theme-color" content="#F4EFEA">
+
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
@@ -18,6 +41,100 @@
     will-change: transform;
   }
 </style>
+
+  <!-- Structured data. Google states this is NOT required to appear in its AI
+       features, but it gives every engine an unambiguous set of facts about
+       the business, which is the point. Keep it matching the visible page:
+       schema that contradicts the page is a policy violation. -->
+  <script type="application/ld+json">
+  {
+    "@context": "https://schema.org",
+    "@graph": [
+      {
+        "@type": "ProfessionalService",
+        "@id": "https://foresite-git-main-bears3.vercel.app/#business",
+        "name": "Foresite",
+        "description": "Website design and rebuild service for Australian small businesses, with the technical groundwork that makes a site readable by search engines and AI assistants.",
+        "url": "https://foresite-git-main-bears3.vercel.app/",
+        "email": "PLACEHOLDER@gmail.com",
+        "image": "https://foresite-git-main-bears3.vercel.app/og-image.jpg",
+        "priceRange": "$750-$1500 AUD",
+        "areaServed": { "@type": "Country", "name": "Australia" },
+        "founder": { "@id": "https://foresite-git-main-bears3.vercel.app/#owner" },
+        "knowsAbout": [
+          "Website design",
+          "Website rebuilds",
+          "Local search optimisation",
+          "Google Business Profile setup",
+          "Generative engine optimisation"
+        ],
+        "hasOfferCatalog": {
+          "@type": "OfferCatalog",
+          "name": "Foresite services",
+          "itemListElement": [
+            { "@type": "Offer", "priceCurrency": "AUD", "price": "750",
+              "itemOffered": { "@type": "Service", "name": "Basic website rebuild",
+                "description": "A modern rebuild using supplied photos \u2014 home, services, about and contact \u2014 plus the technical groundwork." } },
+            { "@type": "Offer", "priceCurrency": "AUD", "price": "1500",
+              "itemOffered": { "@type": "Service", "name": "Premium website rebuild",
+                "description": "Custom-created imagery plus interactive scroll animation and motion." } },
+            { "@type": "Offer", "priceCurrency": "AUD", "price": "100",
+              "itemOffered": { "@type": "Service", "name": "Basic care plan",
+                "description": "Hosting, uptime monitoring and a few small content changes each month. No lock-in." } },
+            { "@type": "Offer", "priceCurrency": "AUD", "price": "250",
+              "itemOffered": { "@type": "Service", "name": "Premium care plan",
+                "description": "Unlimited small content changes, a monthly Google Business Profile check, and priority turnaround. No lock-in." } }
+          ]
+        }
+      },
+      {
+        "@type": "Person",
+        "@id": "https://foresite-git-main-bears3.vercel.app/#owner",
+        "name": "[YOUR NAME]",
+        "jobTitle": "Website designer",
+        "worksFor": { "@id": "https://foresite-git-main-bears3.vercel.app/#business" }
+      },
+      {
+        "@type": "FAQPage",
+        "@id": "https://foresite-git-main-bears3.vercel.app/#questions",
+        "mainEntity": [
+          {
+            "@type": "Question",
+            "name": "Couldn\u2019t I just build it myself with Wix or an AI tool?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Yes, and plenty of people do. In a GoDaddy survey of 200 people who ended up hiring a web designer, 30% had already tried building it themselves first, and 76% went looking for a professional specifically to move the result up a level. Those tools are good at producing a page. What they do not do is decide what your business should say, structure it so the tools your customers are asking can read it, or pick up the phone in eight months when something breaks." }
+          },
+          {
+            "@type": "Question",
+            "name": "Will this get me to the top of Google?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Nobody can promise that. Of a million new pages tracked by Ahrefs for a year, 1.74% reached Google\u2019s top ten, and 72.9% of the pages currently there are more than three years old. Local search is different: a properly set-up Google Business Profile can appear in the map results within weeks, because the map does not much care how old a domain is. That is where Foresite starts." }
+          },
+          {
+            "@type": "Question",
+            "name": "What does being found by AI actually mean?",
+            "acceptedAnswer": { "@type": "Answer", "text": "When somebody asks ChatGPT or Google\u2019s AI for a recommendation, the answer is assembled from pages it can fetch and read at that moment. Google\u2019s documentation states there are no additional requirements to appear in its AI features. The peer-reviewed study Generative Engine Optimization (Aggarwal et al., KDD 2024) found pages are quoted more when they carry concrete statistics (+33%), direct quotations (+41%) and named sources (+30%), and that keyword stuffing does nothing." }
+          },
+          {
+            "@type": "Question",
+            "name": "How long before I see anything?",
+            "acceptedAnswer": { "@type": "Answer", "text": "Local map results in roughly 60 to 90 days. Competitive search terms, six to twelve months. Anyone quoting faster than that is guessing." }
+          },
+          {
+            "@type": "Question",
+            "name": "You are new. Why should I trust you with this?",
+            "acceptedAnswer": { "@type": "Answer", "text": "You should not take it on faith. That is why founding-client pricing exists, why Foresite asks for an honest review rather than a glowing one, and why there is no lock-in on the care plans. You own the site and can take it with you at any point." }
+          }
+        ]
+      },
+      {
+        "@type": "WebSite",
+        "url": "https://foresite-git-main-bears3.vercel.app/",
+        "name": "Foresite",
+        "publisher": { "@id": "https://foresite-git-main-bears3.vercel.app/#business" },
+        "inLanguage": "en-AU"
+      }
+    ]
+  }
+  </script>
 </head>
 <body>
 
@@ -143,6 +260,10 @@
   .masthead{ display: flex; align-items: flex-start; justify-content: space-between; gap: 2rem; }
   .masthead .wordmark{ display: grid; gap: 0.35rem; }
   .masthead nav{ display: grid; gap: 0.3rem; justify-items: end; }
+  /* WCAG 2.2 SC 2.5.8 sets a 24x24 CSS pixel minimum for a target. These
+     links sat at 19px tall. The padding does the work; the negative margin
+     keeps the visual position exactly where it was. */
+  .masthead nav a{ display: inline-block; padding: 0.34rem 0; margin: -0.34rem 0; }
   .masthead nav a{ text-decoration: none; color: var(--text-2); transition: color 0.2s ease; }
   .masthead nav a:hover{ color: var(--signal); }
 
@@ -155,7 +276,8 @@
   }
 
   .headlines{ position: relative; display: grid; }
-  .headlines h1{
+  .headlines h1,
+  .headlines .headline-b{
     grid-area: 1 / 1;
     margin: 0;
     align-self: end;
@@ -167,7 +289,8 @@
     text-wrap: balance;
     transition: opacity 0.5s ease, transform 0.5s ease;
   }
-  .headlines h1 em.accent{ text-transform: none; letter-spacing: -0.01em; }
+  .headlines h1 em.accent,
+  .headlines .headline-b em.accent{ text-transform: none; letter-spacing: -0.01em; }
   .headlines h1 .lead-in{
     display: block;
     font-size: 0.4em;
@@ -183,9 +306,9 @@
                  0 1px 2px rgba(244,239,234,0.98);
   }
   .headlines h1 .slash{ color: var(--text-3); }
-  .headlines h1[data-state="b"]{ opacity: 0; transform: translateY(0.7rem); }
+  .headlines .headline-b[data-state="b"]{ opacity: 0; transform: translateY(0.7rem); }
   .stage[data-phase="b"] .headlines h1[data-state="a"]{ opacity: 0; transform: translateY(-0.7rem); }
-  .stage[data-phase="b"] .headlines h1[data-state="b"]{ opacity: 1; transform: none; }
+  .stage[data-phase="b"] .headlines .headline-b[data-state="b"]{ opacity: 1; transform: none; }
 
   .stage-aside{
     display: grid;
@@ -669,6 +792,82 @@
      above are declared twice - a base pass and a components pass - and CSS
      applies the last matching rule of equal specificity. When these blocks
      sat in the middle, the components pass below them silently overrode every
+  /* ---- straight-answers section -------------------------------------- */
+  .qa{ display: grid; gap: 0; }
+  .qa .q{
+    padding: 1.6rem 0;
+    border-top: 1px solid var(--line-soft);
+  }
+  .qa .q:first-child{ border-top: none; padding-top: 0; }
+  .qa .q:last-child{ padding-bottom: 0; }
+  .qa .q h3{
+    font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 500;
+    font-size: 1.12rem;
+    line-height: 1.25;
+    letter-spacing: -0.01em;
+    color: var(--text);
+    margin: 0 0 0.7rem;
+    max-width: 34ch;
+  }
+  .qa .q p{
+    max-width: 62ch;
+    color: var(--text-2);
+    margin: 0 0 0.75rem;
+  }
+  .qa .q p:last-child{ margin-bottom: 0; }
+  .qa .q strong{ color: var(--text); font-weight: 600; }
+  .qa .src{
+    font-size: 0.72rem;
+    letter-spacing: 0.05em;
+    color: var(--text-3);
+    margin-top: 0.9rem;
+  }
+  .qa .src em{ font-style: italic; }
+
+  /* ---- form additions -------------------------------------------------- */
+  .field .opt{
+    font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 0.66rem;
+    letter-spacing: 0.12em;
+    text-transform: uppercase;
+    color: var(--text-3);
+    margin-left: 0.5rem;
+  }
+  .reply-promise{
+    margin: 0.9rem 0 0;
+    font-size: 0.85rem;
+    line-height: 1.45;
+    color: var(--text-2);
+  }
+  .reply-promise strong{ color: var(--text); font-weight: 600; }
+
+  .foot-cta{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 0.9rem 1.2rem;
+    margin-bottom: 1.4rem;
+  }
+  .foot-cta span{ font-size: 0.9rem; color: var(--text-2); }
+
+  /* ---- repeated call to action ---------------------------------------- */
+  .cta-line{
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: 1rem 1.4rem;
+    margin-top: 2.2rem;
+    padding-top: 1.6rem;
+    border-top: 1px solid var(--line-soft);
+  }
+  .cta-line p{
+    margin: 0;
+    color: var(--text-2);
+    max-width: 44ch;
+    font-size: 0.95rem;
+  }
+
      responsive rule, so phones were served the desktop two-column layout and
      the page scrolled sideways. Keep them last.
      --------------------------------------------------------------- */
@@ -704,7 +903,7 @@
     .stage{ height: auto; }
     .stage-sticky{ position: relative; height: auto; min-height: 0; }
     .stage-ui{ height: auto; min-height: 88vh; }
-    .headlines h1[data-state="b"]{ display: none; }
+    .headlines .headline-b[data-state="b"]{ display: none; }
     *{ transition: none !important; }
   }
 
@@ -728,6 +927,7 @@
           <a class="mono" href="#included">What's included ↗</a>
           <a class="mono" href="#pricing">Pricing ↗</a>
           <a class="mono" href="#care">Care plans ↗</a>
+      <a class="mono" href="#questions">Questions ↗</a>
           <a class="mono" href="#contact">Contact ↗</a>
         </nav>
       </header>
@@ -735,7 +935,7 @@
       <div class="stage-mid">
         <div class="headlines">
           <h1 data-state="a"><span class="lead-in">We&rsquo;re on the cusp of the AI revolution.<br>Is your business</span>invisible<br>to <em class="accent">AI?</em></h1>
-          <h1 data-state="b">Ready to<br>be <em class="accent">found?</em></h1>
+          <p class="headline-b" data-state="b" aria-hidden="true">Ready to<br>be <em class="accent">found?</em></p>
         </div>
 
         <div class="stage-aside">
@@ -942,6 +1142,10 @@
       </div>
     </div>
     <p class="tier-note">Every build includes: up to 5 pages (home, services, about, FAQ, contact), a mobile-friendly responsive design, the technical groundwork above, a contact form, and your Google Business Profile checked and completed. Basic uses photos you supply. Premium adds custom-created imagery and animation. Online stores, extra pages, or custom back-end functionality are quoted separately and always agreed in writing before any work starts — no surprise costs.</p>
+    <div class="cta-line">
+      <p>Not sure which one you need? Tell me what you have now and I&rsquo;ll say so honestly &mdash; including if the answer is neither.</p>
+      <a class="btn" href="#contact">Get in touch</a>
+    </div>
   </div>
 </section>
 
@@ -978,6 +1182,48 @@
   </div>
 </section>
 
+<section class="band" id="questions">
+  <div class="band-head">
+    <span class="mono">[ Straight answers ]</span>
+    <h2>The questions people ask before they call.</h2>
+  </div>
+  <div class="band-body">
+    <div class="qa">
+
+      <div class="q">
+        <h3>Couldn&rsquo;t I just build it myself with Wix or an AI tool?</h3>
+        <p>Yes &mdash; and plenty of people do. In a survey of 200 people who ended up hiring a web designer, <strong>30% had already tried building it themselves first</strong>, and 76% went looking for a professional specifically to move the result up a level. Those tools are genuinely good at producing a page. What they don&rsquo;t do is decide what your business should say, structure it so the tools your customers are asking can actually read it, or pick up the phone in eight months when something breaks.</p>
+        <p class="src mono">Source: GoDaddy, &ldquo;What clients want&rdquo;, 200-client survey</p>
+      </div>
+
+      <div class="q">
+        <h3>Will this get me to the top of Google?</h3>
+        <p>Nobody can promise that, and anyone who does is selling you something. Here is what the evidence actually shows: of a million new pages tracked for a year, <strong>1.74% reached Google&rsquo;s top ten</strong>, and 72.9% of the pages currently sitting there are more than three years old.</p>
+        <p>Local search is a different story. A properly set-up Google Business Profile can appear in the map results within weeks, because the map doesn&rsquo;t much care how old your domain is. That is where I start, and it is where the phone calls come from.</p>
+        <p class="src mono">Source: Ahrefs, one-million-URL ranking study</p>
+      </div>
+
+      <div class="q">
+        <h3>What does &ldquo;found by AI&rdquo; actually mean?</h3>
+        <p>When somebody asks ChatGPT or Google&rsquo;s AI for a recommendation, the answer is assembled from pages it can fetch and read at that moment. Google&rsquo;s own documentation is blunt about it: there is <em>no</em> secret code that gets you in &mdash; it is the same fundamentals, done properly.</p>
+        <p>The one peer-reviewed study on the subject found pages get quoted more when they carry <strong>concrete statistics (+33%), direct quotations (+41%) and named sources (+30%)</strong> &mdash; and that keyword stuffing, the old SEO reflex, does nothing at all. So the work is real, and it is the opposite of the tricks.</p>
+        <p class="src mono">Sources: Google Search Central, AI features documentation; Aggarwal et al., <em>Generative Engine Optimization</em>, KDD 2024</p>
+      </div>
+
+      <div class="q">
+        <h3>How long before I see anything?</h3>
+        <p>Local map results in roughly <strong>60 to 90 days</strong>. Competitive search terms, six to twelve months. Anyone quoting you faster than that is guessing, and you should ask them what they are basing it on.</p>
+      </div>
+
+      <div class="q">
+        <h3>You&rsquo;re new. Why should I trust you with this?</h3>
+        <p>Fair question, and the honest answer is that you shouldn&rsquo;t take it on faith. That is exactly why founding-client pricing exists, why I ask for an honest review rather than a glowing one, and why there is no lock-in on the care plans. You own the site. You can walk at any point and take it with you.</p>
+      </div>
+
+    </div>
+  </div>
+</section>
+
 <section class="closer" id="contact">
   <div class="closer-intro">
     <span class="mono">[ Get in touch ]</span>
@@ -989,22 +1235,25 @@
 
   <form id="contact-form">
     <input type="hidden" name="access_key" value="WEB3FORMS_ACCESS_KEY_PLACEHOLDER">
+    <!-- Makes the notification email obvious on a phone, so enquiries get
+         answered in minutes rather than tomorrow. -->
+    <input type="hidden" name="subject" value="New Foresite enquiry">
+    <input type="hidden" name="from_name" value="Foresite website">
     <input type="checkbox" name="botcheck" class="sr-only" style="display:none">
 
+    <!-- Four fields, deliberately. Completion falls off a cliff between five
+         and seven: roughly 23% at three fields, 17% at five, 11% at seven.
+         Business name was dropped because the website address gives it. -->
     <div class="field">
       <label for="f-name">Name</label>
       <input id="f-name" name="name" type="text" required autocomplete="name">
-    </div>
-    <div class="field">
-      <label for="f-business">Business name</label>
-      <input id="f-business" name="business" type="text" autocomplete="organization">
     </div>
     <div class="field">
       <label for="f-email">Email</label>
       <input id="f-email" name="email" type="email" required autocomplete="email">
     </div>
     <div class="field">
-      <label for="f-website">Current website (if you have one)</label>
+      <label for="f-website">Current website <span class="opt">optional</span></label>
       <input id="f-website" name="website" type="text" placeholder="e.g. yourbusiness.com.au">
     </div>
     <div class="field">
@@ -1014,12 +1263,14 @@
 
     <button class="btn full" type="submit" id="f-submit">Send message</button>
     <p class="form-status" id="f-status" role="status"></p>
+    <p class="reply-promise">I read every enquiry myself and reply <strong>within one business day</strong> &mdash; usually the same day.</p>
     <p class="form-privacy">Your details are only used to reply to your enquiry. They're never sold or shared, and you can ask me to delete them at any time.</p>
   </form>
 </section>
 
 <footer>
-  <p>Foresite is an independent website design and rebuild service for Australian small businesses, focused on making sites genuinely easy to find. ABN: PLACEHOLDER-ADD-YOUR-ABN.</p>
+  <p class="foot-cta"><a class="btn" href="#contact">Get in touch</a> <span>or email <a href="mailto:PLACEHOLDER@gmail.com">PLACEHOLDER@gmail.com</a></span></p>
+  <p>Foresite is an independent website design and rebuild service for Australian small businesses, run by [YOUR NAME] in [YOUR TOWN/REGION], Australia. ABN: PLACEHOLDER-ADD-YOUR-ABN.</p>
   <p>This is a technical audit and rebuild service. It improves how easily your site can be found and understood — it does not guarantee inclusion in any specific search result or AI-generated answer.</p>
 </footer>
 

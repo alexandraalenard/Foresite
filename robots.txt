@@ -1,0 +1,59 @@
+# Foresite — crawler permissions
+#
+# Two kinds of AI bot exist and they are not the same thing.
+#
+#   LIVE ANSWER bots fetch a page at the moment somebody asks a question.
+#   Blocking these removes the site from AI answers entirely.
+#
+#   TRAINING bots collect data to train a model. Blocking these has no effect
+#   on whether the site shows up in an answer.
+#
+# Most "block AI bots" snippets on the internet block both without saying so.
+# Everything below is deliberate.
+
+# ---- search engines ----------------------------------------------------
+User-agent: Googlebot
+Allow: /
+
+# Bingbot matters more than people realise: Bing's index feeds Microsoft
+# Copilot AND ChatGPT's web results.
+User-agent: Bingbot
+Allow: /
+
+User-agent: DuckDuckBot
+Allow: /
+
+User-agent: Applebot
+Allow: /
+
+# ---- live AI answer bots: keep these open ------------------------------
+User-agent: OAI-SearchBot
+Allow: /
+
+User-agent: ChatGPT-User
+Allow: /
+
+User-agent: Claude-User
+Allow: /
+
+User-agent: Claude-SearchBot
+Allow: /
+
+User-agent: PerplexityBot
+Allow: /
+
+User-agent: Perplexity-User
+Allow: /
+
+User-agent: Applebot-Extended
+Allow: /
+
+# ---- everything else ---------------------------------------------------
+# Training-only crawlers (GPTBot, ClaudeBot, CCBot, Google-Extended) are
+# neither allowed nor blocked here, so they fall through to this rule and are
+# permitted. To opt out of model training without losing AI answer visibility,
+# add explicit Disallow blocks for those four names — nothing above changes.
+User-agent: *
+Allow: /
+
+Sitemap: https://foresite-git-main-bears3.vercel.app/sitemap.xml

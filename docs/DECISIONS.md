@@ -260,3 +260,56 @@ _Last updated: 4 September 2026_
   rather than flicking — slow movement gives sharp frames across a continuous range. That
   is a re-generation request, not something that can be fixed in code. This clip gives
   about 210px of travel across seven usable positions.
+
+
+---
+
+## 4 September 2026 (later) — applied from The Website Recipe Book
+
+Five research agents compiled a reference book ("The Website Recipe Book", kept as a
+Claude artifact). These are the findings that were implemented on this site, and why.
+
+- **Four form fields, not five.** Completion falls off between five and seven fields:
+  roughly 23% at three, 17% at five, 11% at seven. "Business name" was dropped because
+  the website address supplies it. The website field stays because friction that
+  visibly buys the visitor something - here, the free check - is tolerated.
+
+- **A visible reply-time promise under the form.** The strongest single number in the
+  whole research pass: leads contacted within five minutes are about 21x more likely to
+  convert (MIT / InsideSales), 78% of customers buy from whoever replies first, and the
+  average business takes 47 hours while 58% never reply at all. The promise on the page
+  is now a commitment that has to be kept.
+
+- **robots.txt that separates the two kinds of AI bot.** Live-answer bots
+  (OAI-SearchBot, Claude-User, PerplexityBot) fetch a page the moment somebody asks a
+  question; training bots (GPTBot, ClaudeBot, CCBot, Google-Extended) do not affect
+  answers at all. Most "block AI bots" snippets online block both without saying so.
+  The file explains this inline so nobody breaks it later.
+
+- **Bing matters more than it looks.** Bing's index feeds both Microsoft Copilot and
+  ChatGPT's web results. Google Search Console alone is not enough. Bingbot is
+  explicitly allowed, and Bing Webmaster Tools is now a launch step.
+
+- **A "Straight answers" section.** Two jobs at once. It answers the objections the
+  GoDaddy 200-client survey says clients actually have - 30% had already tried DIY
+  before hiring a professional - and it is exactly the content shape the one
+  peer-reviewed GEO study rewards: concrete statistics (+41% for quotations, +33% for
+  statistics, +30% for cited sources), with keyword stuffing scoring zero.
+
+- **Structured data added, but not oversold.** Google states plainly that structured
+  data is NOT required to appear in its AI features. It is here as hygiene - an
+  unambiguous set of facts for every engine - not as a lever. FAQ rich results were
+  retired by Google in May 2026; the FAQPage schema is kept for other engines only.
+
+- **One h1, not two.** The hero's second headline is a scroll state of the same
+  heading, not a second heading, so it is now a <p> with the same styling.
+
+- **Nav tap targets raised to clear 24px.** WCAG 2.2 SC 2.5.8. They were 19px.
+
+- **Open Graph and Twitter card meta plus a rendered share image.** The link previously
+  pasted into Facebook, LinkedIn or a text message as bare text.
+
+- **Deliberately NOT changed: the prices.** The research says $750 is below the
+  Australian market floor (freelancers $1,500-$2,500 for a basic build) and works out
+  at $30-$50 an hour, and that clients ranked price below vision, trust and value.
+  That is a business decision for the owner, not a code change.

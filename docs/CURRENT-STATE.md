@@ -23,6 +23,14 @@ _Last updated: 4 September 2026_
   frames where the eye was at rest; every frame registered so the face stays locked and
   only the iris moves. The explosion is still cut in from the first clip, the only one
   that has one. 60 files, 2.9 MB, cache tag `?v=10`.
+- **Recipe Book findings applied (4 Sept).** Contact form trimmed to four fields with a
+  visible reply-time promise; a "Straight answers" objection-handling section with cited
+  statistics; robots.txt separating live AI answer bots from training bots; sitemap.xml;
+  ProfessionalService, Person, WebSite and FAQPage structured data; Open Graph and
+  Twitter card meta plus a rendered share image; a matching 404 page; security headers;
+  one h1 instead of two; nav tap targets raised to clear WCAG 2.2's 24px floor. Audited
+  clean: no images without alt, no unlabelled fields, no empty links or buttons, no
+  console errors, no sideways scroll at 360-1920px, 60fps.
 - Light palette across the whole site, interactive consumer-behaviour timeline, and the
   glass panel behind the hero paragraph: all in and tested.
 - Tested in a real browser at 1920×1080, 1500×900, 768×1024, 390×844 and 360×800: no

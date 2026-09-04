@@ -28,6 +28,51 @@ Check:
 
 Tell me yes or no. If yes, I'll merge it into `main` and it goes live.
 
+## 1b. Launch steps that only you can do (about 30 minutes, all free)
+
+These are setup jobs on other people's websites, so they can't be done in the code.
+
+**Google Search Console** - search.google.com/search-console. Add the site, verify it,
+submit `sitemap.xml`. This is how Google finds the pages.
+
+**Bing Webmaster Tools** - bing.com/webmasters. Add the site (there's an "import from
+Google Search Console" button that does it in two clicks), submit the sitemap, turn on
+IndexNow. Do not skip this one: Bing's index feeds Microsoft Copilot AND ChatGPT's web
+results, so it is the single cheapest thing on this list.
+
+**Google Business Profile** - business.google.com. Even without a shopfront, set it up
+with service-area suburbs. This is the fastest route to actually being found locally,
+and it also feeds what the AI assistants say about you.
+
+**Web3Forms auto-reply** - the auto-responder that emails the enquirer straight back is
+a paid Web3Forms feature. Until you have it, the reply promise on the site is yours to
+keep manually. It is worth keeping: the research says 78% of customers buy from whoever
+replies first.
+
+**When you buy a real domain**, search `index.html` for `foresite-git-main-bears3` and
+change every one of those to the new address - there are canonical, Open Graph and
+structured-data references. Same in `robots.txt` and `sitemap.xml`. Leaving them stale
+tells Google the real site is a copy of the old one.
+
+## 1c. A decision only you can make: the price
+
+The research says your $750 build sits below the Australian market floor. Other
+freelancers charge $1,500-$2,500 for a basic site; at 15-25 hours of real work, $750
+works out at $30-$50 an hour before tax. And the 200-client survey found price was NOT
+the deciding factor - vision, trust and value all ranked above it.
+
+Three options:
+
+1. **Leave it.** Being the low-risk option is a legitimate way to win the first five
+   clients. Just price it knowingly, as the cost of acquiring a care-plan client.
+2. **Raise the build to $1,200 / $2,200.** Puts you inside the market rather than below
+   it, and stops the price itself reading as a warning sign.
+3. **Keep $750 but require a 12-month care plan.** The care plans are where the money
+   actually is: $150/month at about two hours' work is $75/hour, recurring, and twenty
+   clients is $3,000/month.
+
+Tell me which and I'll change the site.
+
 ## 2. Fill in the placeholders
 
 In `index.html`, replace: `[YOUR NAME]`, `[YOUR TOWN/REGION]`, `PLACEHOLDER@gmail.com`

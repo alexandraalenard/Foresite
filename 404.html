@@ -1,0 +1,107 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Page not found &mdash; Foresite</title>
+<meta name="robots" content="noindex">
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
+<style>
+  :root{
+    --bg:        #F4EFEA;
+    --bg-raised: #EAE2DA;
+    --line:       #C6B9AC;
+    --line-soft:  #D5CABE;
+    --text:      #15110E;
+    --text-2:       #524941;
+    --text-3:   #6D645B;
+    --signal:     #8F5409;
+    --signal-dim: #A87C3E;
+    --shut:       #8A4E42;
+    --good:       #2E6B45;
+
+    --step-0: 0.75rem;
+    --step-1: 0.875rem;
+    --step-2: 1.0625rem;
+    --step-3: 1.5rem;
+    --step-4: 2.25rem;
+    --step-5: clamp(2.3rem, 5.6vw, 4.75rem);
+
+    --gutter: clamp(1.25rem, 5vw, 5rem);
+    --rule: 1px solid var(--line);
+  }
+  *{ box-sizing: border-box; }
+  html{ color-scheme: light; background: var(--bg); }
+  body{
+    margin: 0;
+    min-height: 100vh;
+    display: grid;
+    place-content: center;
+    padding: 2rem clamp(1.2rem, 6vw, 4rem);
+    background: var(--bg);
+    color: var(--text);
+    font-family: "Newsreader", Georgia, serif;
+    font-size: 17px;
+    line-height: 1.6;
+    -webkit-font-smoothing: antialiased;
+  }
+  .box{ max-width: 44rem; }
+  .mono{
+    font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 0.72rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--text-3);
+  }
+  .wordmark{
+    font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 0.85rem;
+    letter-spacing: 0.32em;
+    color: var(--text);
+    display: block;
+    margin-bottom: 2.6rem;
+  }
+  h1{
+    font-family: "Archivo", "Helvetica Neue", Arial, sans-serif;
+    font-weight: 700;
+    font-size: clamp(2.1rem, 7vw, 3.4rem);
+    line-height: 1.02;
+    letter-spacing: -0.03em;
+    margin: 0.6rem 0 0;
+    text-wrap: balance;
+  }
+  h1 em{ font-style: italic; font-weight: 400; color: var(--signal); }
+  p{ color: var(--text-2); max-width: 46ch; margin: 1.1rem 0 0; }
+  .actions{ display: flex; flex-wrap: wrap; gap: 0.9rem 1.2rem; align-items: center; margin-top: 2.2rem; }
+  .btn{
+    display: inline-block;
+    font-family: "IBM Plex Mono", ui-monospace, "SFMono-Regular", Menlo, monospace;
+    font-size: 0.76rem;
+    letter-spacing: 0.14em;
+    text-transform: uppercase;
+    color: var(--signal);
+    text-decoration: none;
+    border: 1px solid var(--signal);
+    padding: 0.85rem 1.5rem;
+  }
+  .btn:hover{ background: var(--signal); color: var(--bg); }
+  .btn:focus-visible, a:focus-visible{ outline: 2px solid var(--signal); outline-offset: 3px; }
+  .actions span{ font-size: 0.92rem; color: var(--text-2); }
+  a{ color: var(--signal); text-underline-offset: 0.18em; }
+</style>
+</head>
+<body>
+  <div class="box">
+    <span class="wordmark">FORESITE</span>
+    <span class="mono">Error 404</span>
+    <h1>That page has <em>moved on.</em></h1>
+    <p>The link you followed doesn&rsquo;t lead anywhere any more. Nothing is broken on your end.</p>
+    <div class="actions">
+      <a class="btn" href="/">Back to the start</a>
+      <span>or email <a href="mailto:PLACEHOLDER@gmail.com">PLACEHOLDER@gmail.com</a></span>
+    </div>
+  </div>
+</body>
+</html>
