@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Foresite — Modern websites, built to be found</title>
   <meta name="description" content="Foresite rebuilds outdated small business websites and sets them up to be found — by search engines, by Google Maps, and by AI assistants. Flat-fee builds for Australian local businesses.">
-  <link rel="preload" as="image" href="frames/eye_human.webp?v=8" fetchpriority="high">
+  <link rel="preload" as="image" href="frames/eye_human.webp?v=9" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
@@ -1165,10 +1165,7 @@
   // The cursor maps onto THIS, not onto the frame number - the eye does not
   // move at an even rate through the clip, so mapping to frame number put the
   // eye hard left when the cursor was dead centre.
-  var GAZE_POS = [777.5, 794.1, 826.0, 869.4, 908.2, 944.7, 976.9, 1008.4, 1045.0, 1080.1];
-  // The eye region, in scene coordinates. Only this rectangle is swapped as the
-  // eye tracks; everything else comes from one fixed plate.
-  var EYE_BOX = { x: 450.0, y: 255.0, w: 510.0, h: 307.5 };
+  var GAZE_POS = [794.1, 826.0, 869.4, 908.2, 944.7, 976.9, 1008.4, 1045.0, 1080.1];
   var FRONT_POS = 921;      // where the blink leaves the eye: looking straight out
   var MS_HOLD = 450;        // a beat of stillness before it starts following you
   var MS_AIFADE = 280;      // settle from the blink onto the still plate
@@ -1180,7 +1177,7 @@
   // Fraction of the frame's short side that fades out at each edge.
   var FEATHER = 0.03;
 
-  var BLINK_N = 24, GAZE_N = 10, EXPL_N = 27;
+  var BLINK_N = 24, GAZE_N = 9, EXPL_N = 27;
   var BLINK_CUT = 18;                  // frames 0-23 are the blink itself
   // MS_SETTLE covers the bridge between the blink and the gaze run. It is
   // deliberately quick: the visitor has no control until it finishes, so a
@@ -1197,12 +1194,11 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=8';
+  var P = 'frames/', V = '?v=9';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 
   var human = img('eye_human.webp');
-  var eyeBase = img('eye_base.webp');   // the still plate behind the moving eye
   var blink = [], gaze = [], expl = [], i;
   for (i = 0; i < BLINK_N; i++) blink.push(img('blink_' + pad(i) + '.webp'));
   for (i = 0; i < GAZE_N;  i++) gaze.push(img('gaze_'  + pad(i) + '.webp'));
@@ -1231,7 +1227,7 @@
     });
   }
 
-  whenLoaded([human, eyeBase].concat(blink, gaze), function () {
+  whenLoaded([human].concat(blink, gaze), function () {
     ready1 = true; dirty = true; warm(gaze); warm(blink);
     if (wantsBlink) startBlink();
     for (var k = 0; k < EXPL_N; k++) expl.push(img('expl_' + pad(k) + '.webp'));
@@ -1364,10 +1360,18 @@
     if (state === 'human') { plate(human); feather(); return; }
     if (state === 'blink') { plate(blink[Math.min(blinkIndex, BLINK_N - 1)]); feather(); return; }
 
-    // The clip's HUD is not stable frame to frame - every readout and circuit
-    // line shifts slightly - so swapping whole frames to move the eye made the
-    // entire screen flicker. Only the eye rectangle is swapped now; the HUD,
-    // face and lashes all come from one fixed plate and never move.
+    // Whole, untouched frames - nothing composited, nothing shifted.
+    //
+    // Three things were tried here and all three were worse. Cross-fading two
+    // gaze frames ghosts the eye against itself (they are different positions,
+    // not a tween). Shifting the whole image by the sub-step remainder throws
+    // the picture around. Compositing a fixed plate behind a moving eye crop
+    // holds the HUD still, but lash strands cross the crop edge and the two
+    // frames do not line up, so the lashes come out mangled.
+    //
+    // What works: step only between CONSECUTIVE video frames. The HUD then
+    // moves by one frame of its own animation, which is exactly what the video
+    // does when it plays.
     //
     // Two earlier attempts are worth not repeating. Cross-fading two gaze
     // frames ghosts the eye against itself - they are different positions, not
@@ -1385,12 +1389,7 @@
     }
     gazeShown = gi;
     function gazePlate() {
-      plate(eyeBase);
-      var im = gaze[gi < 0 ? 0 : gi];
-      if (ready(im)) {
-        ctx.drawImage(im, ox + EYE_BOX.x * k, oy + EYE_BOX.y * k,
-                          EYE_BOX.w * k, EYE_BOX.h * k);
-      }
+      plate(gaze[gi < 0 ? 0 : gi]);
       // The blink's last frame and the still plate are 34 video frames apart,
       // so their HUDs differ. Fade between them once rather than cutting.
       var ft = aiFadeAt ? (performance.now() - aiFadeAt) / MS_AIFADE : 1;
