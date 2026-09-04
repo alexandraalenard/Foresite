@@ -109,6 +109,40 @@ _Last updated: 3 September 2026_
 - **Pricing.** Flat fees ($750 / $1,500) for honesty and simplicity vs hourly. Care plans
   ($100 / $250) are the real recurring value; hosting costs about nothing to deliver.
 
+- **The hero leads on the AI shift, not on the service.** The old opening line described
+  what Foresite does; it created no urgency. It now reads as one sentence - *"We're on the
+  cusp of the AI revolution. Is your business invisible to AI?"* - with the owner's
+  existing bold headline kept exactly as it was and the new framing wrapped around it.
+
+  "Future-proof" was deliberately **not** used, though it was the owner's first instinct.
+  It is an absolute promise about an unknowable future and sits badly next to the
+  misleading-conduct rule below. The supporting copy says what the work *is* - modern,
+  fast, structured so AI tools can read and understand the business - and stops short of
+  promising what it will *achieve*.
+
+  The supporting paragraph is built on one contrast: *"Google offered your customers ten
+  options. AI offers them one."* "Names" is used rather than "recommends" because it is
+  colder and closer to what actually happens. The closing line - *"The time to move your
+  business into the AI revolution is now"* - deliberately echoes the headline's opening, so
+  the paragraph lands back where it started.
+
+  **One phrase was corrected against the owner's draft.** She wrote *"most small business
+  websites can't be read at all."* That is not true - AI can read almost any website; what it
+  cannot do is make sense of most of them. It now reads *"most small business websites were
+  never built to be read by AI agents,"* which completes the "read" thread and is accurate -
+  the claim is about what those sites were designed for, not about what is technically
+  possible. Overstating is
+  precisely what undercuts an honest-broker positioning, and it is the kind of claim a
+  prospect can disprove in thirty seconds. Hold this line if the copy is revisited.
+
+  Note on capitalisation: "AI revolution" is lower-case in both the opening line and the
+  closing one. Keep them matching.
+
+  Note for whoever edits this next: the hero has no dimming overlay behind it any more, so
+  every line of hero text carries its own light halo instead. The lead-in was the one piece
+  that did not, and it washed out over the bright part of the eye. If the copy changes
+  again, re-check the contrast rather than assuming.
+
 - **Honesty positioning.** No "GEO" buzzword in customer copy. Never promise a business
   WILL appear in AI answers — that is a misleading-conduct risk under Australian Consumer
   Law. Sell the setup work only. The footer carries a disclaimer to that effect.
