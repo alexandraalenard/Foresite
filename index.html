@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1">
   <title>Foresite — Modern websites, built to be found</title>
   <meta name="description" content="Foresite rebuilds outdated small business websites and sets them up to be found — by search engines, by Google Maps, and by AI assistants. Flat-fee builds for Australian local businesses.">
-  <link rel="preload" as="image" href="frames/eye_human.webp?v=5" fetchpriority="high">
+  <link rel="preload" as="image" href="frames/eye_human.webp?v=6" fetchpriority="high">
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
@@ -603,6 +603,67 @@
   }
   footer p{ margin: 0; color: var(--text-3); font-size: var(--step-0); line-height: 1.65; }
 
+  /* --- glass panel behind the hero paragraph ------------------------------
+     Sits over the footage like a HUD readout. It replaces the text halo on
+     this paragraph: with a panel behind it the halo just muddies the edges.
+     backdrop-filter is doing the frosting, so there is a plain-tint fallback
+     for browsers without it - without one the text would sit on 34% white. */
+  .stage-aside p{
+    padding: 1.15rem 1.35rem;
+    background: rgba(255,255,255,0.30);
+    -webkit-backdrop-filter: blur(16px) saturate(1.2);
+    backdrop-filter: blur(16px) saturate(1.2);
+    border: 1px solid rgba(255,255,255,0.6);
+    box-shadow: 0 1px 26px rgba(110,95,85,0.10);
+    text-shadow: none;
+  }
+  @supports not ((backdrop-filter: blur(2px)) or (-webkit-backdrop-filter: blur(2px))){
+    .stage-aside p{ background: rgba(250,247,243,0.88); }
+  }
+
+  /* --- interactive timeline ------------------------------------------------
+     A rail of dates; hovering, clicking, tapping or arrowing to one shows its
+     detail below. Every paragraph stays in the DOM whichever is showing, so
+     nothing is hidden from crawlers or AI - only from the eye.
+     Below 700px there is no hover and no room for eight labels, so the rail is
+     dropped and every entry is simply stacked and readable. */
+  .tl{ display: grid; gap: 2.2rem; }
+  .tl-rail{ position: relative; display: flex; padding-top: 0.5rem; }
+  .tl-rail::before{
+    content: ""; position: absolute; left: 0; right: 0; top: 0.85rem;
+    height: 1px; background: var(--line);
+  }
+  .tl-dot{
+    flex: 1 1 0; min-width: 0;
+    display: grid; justify-items: center; gap: 0.6rem;
+    padding: 0 0.2rem; border: 0; background: none; cursor: pointer;
+    font: inherit; color: var(--text-3);
+    -webkit-tap-highlight-color: transparent;
+  }
+  .tl-dot .mark{
+    width: 0.7rem; height: 0.7rem; border-radius: 50%;
+    background: var(--bg); border: 1px solid var(--line);
+    transition: transform 0.2s ease, background-color 0.2s ease, border-color 0.2s ease;
+  }
+  .tl-dot[data-accent] .mark{ border-color: var(--signal-dim); }
+  .tl-dot .yr{
+    font-size: 0.7rem; letter-spacing: 0.09em; text-transform: uppercase;
+    white-space: nowrap; transition: color 0.2s ease;
+  }
+  .tl-dot:hover .mark{ border-color: var(--signal); }
+  .tl-dot:focus-visible{ outline: 2px solid var(--signal); outline-offset: 4px; }
+  .tl-dot[aria-selected="true"] .mark{
+    background: var(--signal); border-color: var(--signal); transform: scale(1.4);
+  }
+  .tl-dot[aria-selected="true"] .yr{ color: var(--text); }
+
+  .tl-stage{ min-height: 12rem; }
+  .tl-panel{ display: none; }
+  .tl-panel.is-active{ display: grid; gap: 0.7rem; max-width: 62ch; }
+  .tl-panel .yr{ color: var(--signal); font-size: var(--step-0); letter-spacing: 0.12em; text-transform: uppercase; }
+  .tl-panel h3{ margin: 0; font-size: var(--step-3); font-weight: 700; letter-spacing: -0.015em; line-height: 1.25; }
+  .tl-panel p{ margin: 0; color: var(--text-2); font-size: var(--step-2); line-height: 1.65; }
+
   /* ---------------------------------------------------------------
      Media queries live at the END of the stylesheet on purpose. The rules
      above are declared twice - a base pass and a components pass - and CSS
@@ -628,6 +689,11 @@
     .masthead{ flex-direction: column; gap: 1rem; }
     .masthead nav{ justify-items: start; grid-auto-flow: column; gap: 1.1rem; }
     .stage-foot{ display: none; }
+    /* No hover on touch, and no room for eight labels: drop the rail and
+       show every entry stacked instead. */
+    .tl-rail{ display: none; }
+    .tl-stage{ min-height: 0; display: grid; gap: 2rem; }
+    .tl-panel{ display: grid; gap: 0.55rem; }
     .tiers{ grid-template-columns: 1fr; }
     .closer{ grid-template-columns: 1fr; }
     #contact-form{ width: 100%; }
@@ -717,46 +783,90 @@
   </div>
   <div class="band-body">
     <p class="lede">Every jump in technology changed how people research and buy — here's both sides of that story, side by side.</p>
-    <div class="timeline">
-      <div class="timeline-item">
-        <span class="timeline-year mono">1994–95</span>
+    <div class="tl" id="tl">
+      <div class="tl-rail" role="tablist" aria-label="How the way people research and buy has changed">
+        <button class="tl-dot" type="button" role="tab" id="tl-t0" aria-controls="tl-p0"
+                aria-selected="false" tabindex="-1">
+          <span class="mark" aria-hidden="true"></span>
+          <span class="yr mono">1994–95</span>
+        </button>
+        <button class="tl-dot" type="button" role="tab" id="tl-t1" aria-controls="tl-p1"
+                aria-selected="false" tabindex="-1">
+          <span class="mark" aria-hidden="true"></span>
+          <span class="yr mono">1998</span>
+        </button>
+        <button class="tl-dot" type="button" role="tab" id="tl-t2" aria-controls="tl-p2"
+                aria-selected="false" tabindex="-1">
+          <span class="mark" aria-hidden="true"></span>
+          <span class="yr mono">2007</span>
+        </button>
+        <button class="tl-dot" type="button" role="tab" id="tl-t3" aria-controls="tl-p3"
+                aria-selected="false" tabindex="-1">
+          <span class="mark" aria-hidden="true"></span>
+          <span class="yr mono">2011–16</span>
+        </button>
+        <button class="tl-dot" type="button" role="tab" id="tl-t4" aria-controls="tl-p4"
+                aria-selected="false" tabindex="-1">
+          <span class="mark" aria-hidden="true"></span>
+          <span class="yr mono">Nov 2022</span>
+        </button>
+        <button class="tl-dot" type="button" role="tab" id="tl-t5" aria-controls="tl-p5"
+                aria-selected="false" tabindex="-1">
+          <span class="mark" aria-hidden="true"></span>
+          <span class="yr mono">May 2024</span>
+        </button>
+        <button class="tl-dot" type="button" role="tab" id="tl-t6" aria-controls="tl-p6"
+                aria-selected="false" tabindex="-1" data-accent="1">
+          <span class="mark" aria-hidden="true"></span>
+          <span class="yr mono">Now</span>
+        </button>
+        <button class="tl-dot" type="button" role="tab" id="tl-t7" aria-controls="tl-p7"
+                aria-selected="false" tabindex="-1" data-accent="1">
+          <span class="mark" aria-hidden="true"></span>
+          <span class="yr mono">Next</span>
+        </button>
+      </div>
+      <div class="tl-stage">
+      <div class="tl-panel" role="tabpanel" id="tl-p0" aria-labelledby="tl-t0">
+        <span class="yr mono">1994–95</span>
         <h3>Amazon &amp; eBay — trust is still the barrier</h3>
         <p>Online shopping becomes possible for the first time, but most people won't type a credit card number into a website yet. Buying research still happens offline — word of mouth, the phone book, driving past a shop.</p>
       </div>
-      <div class="timeline-item">
-        <span class="timeline-year mono">1998</span>
+      <div class="tl-panel" role="tabpanel" id="tl-p1" aria-labelledby="tl-t1">
+        <span class="yr mono">1998</span>
         <h3>Google's PageRank — the tab-comparison habit begins</h3>
         <p>Search becomes ten ranked blue links instead of a directory. A new buying habit is born and stays dominant for the next 15+ years: open several tabs, compare them side by side, decide yourself.</p>
       </div>
-      <div class="timeline-item">
-        <span class="timeline-year mono">2007</span>
+      <div class="tl-panel" role="tabpanel" id="tl-p2" aria-labelledby="tl-t2">
+        <span class="yr mono">2007</span>
         <h3>The iPhone — research goes wherever you go</h3>
         <p>Search moves into people's pockets. Buying decisions stop happening only at a desk — "near me" searches let people compare options mid-errand, standing in a car park.</p>
       </div>
-      <div class="timeline-item">
-        <span class="timeline-year mono">2011–16</span>
+      <div class="tl-panel" role="tabpanel" id="tl-p3" aria-labelledby="tl-t3">
+        <span class="yr mono">2011–16</span>
         <h3>Siri &amp; Alexa — one answer starts to feel normal</h3>
         <p>Voice assistants get people used to asking out loud and accepting a single spoken answer for simple questions — the first real crack in "always compare a list."</p>
       </div>
-      <div class="timeline-item">
-        <span class="timeline-year mono">Nov 2022</span>
+      <div class="tl-panel" role="tabpanel" id="tl-p4" aria-labelledby="tl-t4">
+        <span class="yr mono">Nov 2022</span>
         <h3>ChatGPT — typing keywords becomes talking</h3>
         <p>Tens of millions of people start describing what they actually need in plain sentences and getting a direct answer back — instead of guessing the right search keywords.</p>
       </div>
-      <div class="timeline-item">
-        <span class="timeline-year mono">May 2024</span>
+      <div class="tl-panel" role="tabpanel" id="tl-p5" aria-labelledby="tl-t5">
+        <span class="yr mono">May 2024</span>
         <h3>Google's AI Overviews — research starts skipping the click</h3>
         <p>An AI-written summary is placed above Google's results list. A 2025 Pew Research study (US) found people click through to an actual website just 8% of the time when an AI summary is shown, versus 15% without one — real research now often happens without ever visiting a business's site.</p>
       </div>
-      <div class="timeline-item is-now">
-        <span class="timeline-year mono">Now</span>
+      <div class="tl-panel" role="tabpanel" id="tl-p6" aria-labelledby="tl-t6">
+        <span class="yr mono">Now</span>
         <h3>AI-first search — the decision is made before you know it</h3>
         <p>37% of consumers now start their search with an AI tool instead of Google. In B2B buying, research firm 6sense found the typical decision is already about 70% complete before a business is even contacted. Increasingly, you're not being compared — you're being confirmed, or skipped.</p>
       </div>
-      <div class="timeline-item is-next">
-        <span class="timeline-year mono">What's next</span>
+      <div class="tl-panel" role="tabpanel" id="tl-p7" aria-labelledby="tl-t7">
+        <span class="yr mono">What's next</span>
         <h3>Agentic AI — comparison disappears entirely</h3>
         <p>AI assistants are starting to move from recommending businesses to acting on people's behalf — comparing, booking and buying automatically. The person may never actively "choose" at all. A business an AI agent can't read or trust won't just rank lower. It won't be part of the conversation.</p>
+      </div>
       </div>
     </div>
   </div>
@@ -1059,9 +1169,12 @@
   // Fraction of the frame's short side that fades out at each edge.
   var FEATHER = 0.03;
 
-  var BLINK_N = 28, GAZE_N = 19, EXPL_N = 27;
+  var BLINK_N = 30, GAZE_N = 19, EXPL_N = 27;
   var BLINK_CUT = 18;                  // frames 0-23 are the blink itself
-  var MS_BLINK = 55, MS_SETTLE = 70;
+  // MS_SETTLE covers the bridge between the blink and the gaze run. It is
+  // deliberately quick: the visitor has no control until it finishes, so a
+  // leisurely one makes the hero feel like it is playing at them.
+  var MS_BLINK = 55, MS_SETTLE = 32;
   var EXPL_ENDS_AT = 0.75;
   var EXPL_FADE = 3;                   // indices over which the burst fades in
 
@@ -1073,7 +1186,7 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=5';
+  var P = 'frames/', V = '?v=6';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 
@@ -1316,5 +1429,47 @@
 })();
 </script>
 
+<script>
+/* Interactive timeline: hover, click, tap or arrow-key through the dates.
+   Standard tablist semantics, so screen readers and keyboards get it too.
+   On narrow screens the rail is hidden by CSS and every panel is shown, so
+   this quietly does nothing there. */
+(function () {
+  var tl = document.getElementById('tl');
+  if (!tl) return;
+  var tabs   = Array.prototype.slice.call(tl.querySelectorAll('.tl-dot'));
+  var panels = Array.prototype.slice.call(tl.querySelectorAll('.tl-panel'));
+  if (!tabs.length || tabs.length !== panels.length) return;
+
+  function select(i, moveFocus) {
+    for (var j = 0; j < tabs.length; j++) {
+      var on = j === i;
+      tabs[j].setAttribute('aria-selected', on ? 'true' : 'false');
+      tabs[j].tabIndex = on ? 0 : -1;
+      panels[j].classList.toggle('is-active', on);
+    }
+    if (moveFocus) tabs[i].focus();
+  }
+
+  tabs.forEach(function (tab, i) {
+    tab.addEventListener('click', function () { select(i); });
+    tab.addEventListener('mouseenter', function () { select(i); });
+    tab.addEventListener('focus', function () { select(i); });
+    tab.addEventListener('keydown', function (e) {
+      var n = null, k = e.key;
+      if (k === 'ArrowRight' || k === 'ArrowDown') n = (i + 1) % tabs.length;
+      else if (k === 'ArrowLeft' || k === 'ArrowUp') n = (i - 1 + tabs.length) % tabs.length;
+      else if (k === 'Home') n = 0;
+      else if (k === 'End') n = tabs.length - 1;
+      if (n !== null) { e.preventDefault(); select(n, true); }
+    });
+  });
+
+  // Open on "Now" - the entry that carries the argument - not on 1994.
+  var start = 0;
+  for (var i = 0; i < tabs.length; i++) if (tabs[i].hasAttribute('data-accent')) { start = i; break; }
+  select(start);
+})();
+</script>
 </body>
 </html>
