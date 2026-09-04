@@ -56,4 +56,10 @@ Allow: /
 User-agent: *
 Allow: /
 
+# Temporary: _index_fixed.html is a staging copy of the homepage that exists
+# only because Windows has index.html locked. It is a duplicate of the home
+# page and must not be indexed. Delete this block once the file is gone.
+User-agent: *
+Disallow: /_index_fixed.html
+
 Sitemap: https://foresite-git-main-bears3.vercel.app/sitemap.xml
