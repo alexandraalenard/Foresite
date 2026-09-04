@@ -1,28 +1,32 @@
 # Foresite — Next Tasks (in order)
 
-_Last updated: 3 September 2026_
+_Last updated: 4 September 2026_
 
-## 1. Push the new eye live  ← YOU ARE HERE
+## 1. Look at the new eye  ← YOU ARE HERE
 
-A ready-to-commit clone of the repo sits at `Desktop\Foresite`, with every change already
-staged: the new `index.html`, the 61 new frame files, these docs, and the removal of the
-48 old unused frames plus the stray `index copy.html` and `index.html2`.
+The second eye clip has been built into the hero on a branch called **`new-eye-2`**.
+**Nothing on the live site has changed.** Everything is already staged in
+`Desktop\Foresite`.
 
-In VS Code: **File → Open Folder → `Desktop\Foresite`** → Source Control icon → type a
-message → **Commit** → **Sync**.
+In VS Code:
 
-There is an older Foresite clone elsewhere on this machine (the one VS Code had open
-before). Once this push has gone through, delete it or run Pull on it, so there is only
-ever one working copy.
+1. Click the **Source Control** icon on the left (the branching arrows).
+2. Type a short message, e.g. `New eye clip`.
+3. Click **Commit**, then **Sync Changes**.
 
-Wait about a minute for Vercel, then test on the live link:
+Then go to vercel.com → the Foresite project → click the newest **Preview** deployment.
+It will be labelled `new-eye-2`, not `main`.
+
+Check:
 
 - [ ] Land on the page without touching the mouse — a human eye.
 - [ ] Move the mouse — it blinks once and reopens as a blue cybernetic eye.
-- [ ] Move the cursor around — the iris follows it.
+- [ ] Move the cursor left and right — the iris follows, and stays sharp everywhere.
 - [ ] Scroll — it cuts to the explosion, and "Ready to be found?" arrives before the
       burst finishes.
 - [ ] Same on a phone: tap, then scroll.
+
+Tell me yes or no. If yes, I'll merge it into `main` and it goes live.
 
 ## 2. Fill in the placeholders
 
@@ -38,7 +42,7 @@ Sign up free at web3forms.com, get an "access key", paste it over
 
 - Register "Foresite" as a business name with ASIC (~$44 for 3 years).
 - Check the name on the IP Australia trademark register.
-- Buy a domain (foresite.com.au needs an ABN).
+- Buy a domain (foresite.com.au needs an ABN, ~$20–25/yr).
 
 ## 5. Sort real hosting before taking customers
 
@@ -47,8 +51,11 @@ Pages (free, commercial use allowed) before this is your live business front.
 
 ## 6. Tidy up (optional)
 
-Delete the unused `frame_000.webp` … `frame_047.webp` and `index.html2` from the repo —
-about 1.8 MB of dead weight.
+- `frames/gaze_007.webp`, `frames/gaze_008.webp` and `frames/expl_026.webp` are left over
+  from the previous build and are no longer used. About 150 KB.
+- Delete the `_claude-junk-delete-me` folder on your Desktop.
+- Delete the old `new-eye` branch once you're happy with `new-eye-2`.
+- `Downloads\foresite-new-eye.tar.gz` was just the transfer bundle — safe to delete.
 
 ## 7. (Later) Stripe care-plan links
 

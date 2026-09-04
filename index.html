@@ -1160,13 +1160,20 @@
   if (!ctx) return;
 
   var DW = 1440, DH = 810;             // every frame is this 16:9 scene
-  var EYE_X = 697, EYE_Y = 405;        // centre of the eye, for framing
+  var EYE_X = 726, EYE_Y = 451;        // centre of the eye, for framing
   // Where the pupil actually sits in each gaze frame, measured off the video.
   // The cursor maps onto THIS, not onto the frame number - the eye does not
   // move at an even rate through the clip, so mapping to frame number put the
   // eye hard left when the cursor was dead centre.
-  var GAZE_POS = [794.1, 826.0, 869.4, 908.2, 944.7, 976.9, 1008.4, 1045.0, 1080.1];
-  var FRONT_POS = 921;      // where the blink leaves the eye: looking straight out
+  //
+  // These frames come from the second clip and every one of them is a frame
+  // where the eye was at REST. Frames caught mid-flick are motion blurred in
+  // the source footage - that was why the iris looked soft everywhere except
+  // hard left. Sharpness was measured as the variance of the Laplacian in a
+  // ring around the pupil: mid-flick frames score under 200, these score
+  // 1000-1700. See build3.py for how the set was chosen.
+  var GAZE_POS = [804.6, 826.3, 854.6, 912.4, 946.5, 996.3, 1018.0];
+  var FRONT_POS = 912.4;   // where the blink leaves the eye: looking straight out
   var MS_HOLD = 450;        // a beat of stillness before it starts following you
   var MS_AIFADE = 280;      // settle from the blink onto the still plate
   var SAFE_W = 920, SAFE_H = 640;      // must never be cropped
@@ -1177,14 +1184,18 @@
   // Fraction of the frame's short side that fades out at each edge.
   var FEATHER = 0.03;
 
-  var BLINK_N = 24, GAZE_N = 9, EXPL_N = 27;
-  var BLINK_CUT = 18;                  // frames 0-23 are the blink itself
+  var BLINK_N = 26, GAZE_N = 7, EXPL_N = 26;
+  var BLINK_CUT = 22;                  // after this index the blink settles
   // MS_SETTLE covers the bridge between the blink and the gaze run. It is
   // deliberately quick: the visitor has no control until it finishes, so a
   // leisurely one makes the hero feel like it is playing at them.
   var MS_BLINK = 55, MS_SETTLE = 32;
   var EXPL_ENDS_AT = 0.75;
-  var EXPL_FADE = 3;                   // indices over which the burst fades in
+  // The burst is the only piece still taken from the FIRST clip - the second
+  // one has no explosion. It is cut in at the frame where the sparks have
+  // already swallowed the iris, and faded over four indices, so the join lands
+  // on white particles rather than on a visibly different eye.
+  var EXPL_FADE = 4;                   // indices over which the burst fades in
 
   var mq = window.matchMedia;
   var reduce = mq && mq('(prefers-reduced-motion: reduce)').matches;
@@ -1194,7 +1205,7 @@
   // Bump this whenever the frame files change. The filenames stay the same
   // between versions, so without it browsers and Vercel's CDN happily serve
   // last week's images with this week's code.
-  var P = 'frames/', V = '?v=9';
+  var P = 'frames/', V = '?v=10';
   function img(src) { var i = new Image(); i.decoding = 'async'; i.src = P + src + V; return i; }
   function pad(n) { return ('00' + n).slice(-3); }
 

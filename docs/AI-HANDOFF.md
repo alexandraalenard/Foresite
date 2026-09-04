@@ -1,6 +1,6 @@
 # Foresite — AI Handover
 
-_Last updated: 3 September 2026_
+_Last updated: 4 September 2026_
 
 Read this first if you are an AI assistant or a developer picking this up.
 
@@ -36,9 +36,9 @@ Three stages, driven by what the visitor does:
 
 | Stage | Trigger | What happens |
 |---|---|---|
-| 1. Human | page loads | a still, human eye (video 0:00) |
-| 2. Cybernetic | first mouse move (or tap) | the eye blinks once and reopens as an AI eye; from then on **the iris follows the cursor** (video 1:00 → 3:00) |
-| 3. Explosion | scrolling the hero | cuts to the fibre-optic burst, scrubbed by scroll position, finishing at 75% so the headline lands before the burst ends (video ~7:50 → 10:00) |
+| 1. Human | page loads | a still, human eye |
+| 2. Cybernetic | first mouse move (or tap) | the eye blinks once and reopens as an AI eye; from then on **the iris follows the cursor** |
+| 3. Explosion | scrolling the hero | cuts to the fibre-optic burst, scrubbed by scroll position, finishing at 75% so the headline lands before the burst ends |
 
 ### Framing
 
@@ -49,78 +49,76 @@ cropping forehead and cheek but never the eye. See `SAFE_W`/`SAFE_H` in the scri
 
 ### How the eye follows your cursor
 
-It is real footage. The eye genuinely looks around in the source video: across frames
-96-120 the pupil travels 93px while the iris, the glowing ring and the lashes all stay
-consistent. Cursor position scrubs that run - cursor on the right of the screen shows the
-start of it, where the pupil sits furthest right; cursor on the left shows the end.
+**Whole, untouched video frames are swapped as the cursor moves. Nothing is composited,
+retouched, masked or shifted at runtime.** This is the single most important thing to
+know, because four other approaches were tried first and every visual defect this project
+hit came from one of them. They are written up in `DECISIONS.md`; do not repeat them.
 
-Nothing is composited, retouched or reconstructed. That matters, because an earlier
-version *was*: it cut the iris out of a single frame, rebuilt the white of the eye behind
-it and slid the iris around. Every visual defect this project hit came from that, and the
-fix was to stop doing it and use the footage that was in the video all along.
+Cursor position maps onto **where the pupil actually sits** in each frame (`GAZE_POS` in
+the script, measured off the video), not onto the frame number. The eye does not move at
+an even rate through the clip, so mapping to frame number put the eye hard left when the
+cursor was dead centre.
 
-**The video only moves the eye sideways.** Vertical cursor movement gets a small parallax
-of the whole image instead of a moving iris. Faking vertical movement would mean going
-back to cutting the iris out, so don't.
+**The video only moves the eye sideways.** Vertical cursor movement does nothing. Faking
+vertical movement would mean cutting the iris out, so don't. If a wider sweep is ever
+wanted, the answer is a new source clip with a bigger, *slower* eye movement in it — not
+retouching this one.
 
-If a wider sweep is ever wanted, the answer is a new source clip with a bigger eye
-movement in it - not retouching this one.
+### Where the frames come from (two clips)
 
-### The frame files
+There are two source clips, and the hero uses both:
 
-| Files | Count | What |
-|---|---|---|
-| `blink_000` … `blink_027` | 28 | the blink and transformation |
-| `gaze_000` … `gaze_024` | 25 | the eye looking around (video frames 96-120) |
-| `expl_000` … `expl_026` | 27 | the explosion |
+- **Clip 2** (`Eye_transforms_into_cybernetic_eye_202609041155.mp4`, 4 Sept) — the human
+  eye, the blink, and all seven gaze positions. Bolder AI iris, and sharp almost
+  throughout. **It has no explosion.**
+- **Clip 1** (`Human_eye_transforms_into_AI_202609040711.mp4`, 3 Sept) — the explosion
+  only. It is the only clip that has one.
 
-About 3.7 MB in total. Only `eye_human.webp` is needed for the first paint; the rest loads
-in the background, explosion frames last, and each one is decoded once off screen at load
-so that scrubbing never stutters.
+The two were generated from the same base image and overlay almost exactly, so the burst
+is cut in from clip 1 at the frame where the sparks have already swallowed the iris, and
+faded over four scroll indices. The join lands on white particles rather than on a
+visibly different eye.
 
-**Frame files are requested with a `?v=` tag** (`V` in the script). The filenames stay the
-same between versions, so without it browsers and Vercel's CDN serve old images against
-new code. Bump it whenever the frames change.
+### Two rules the frame builder follows
 
----|---|
-| `eye_ai_iris.webp` | the iris on its own, as a disc with a transparent edge |
-| `eye_ai_mask.webp` | the shape of the eye opening, as a transparency mask |
+The builder is `build3.py` (kept with the working files, not in the repo).
 
-The iris is drawn into a small offscreen canvas, masked to the eye opening, and only then
-painted onto the page. That mask is what makes the iris slide *behind* the eyelid instead
-of over the top of the lashes. The iris may travel 66px horizontally and 42px vertically
-in the frames' own 1440×810 coordinate space; those are `GAZE_X` and `GAZE_Y` in the
-script.
+1. **Only frames where the eye was AT REST are used.** Frames caught mid-flick are motion
+   blurred in the source footage. Sharpness is measured as the variance of the Laplacian
+   in a ring around the pupil: mid-flick frames score under 200, resting frames score
+   1000–2200. Using consecutive frames meant using blurred ones, which is why the iris
+   once looked soft everywhere except hard left.
+2. **Every frame is registered to a common reference before export.** The camera in clip
+   2 drifts about 70px sideways across its ten seconds. Because the gaze frames come from
+   moments far apart in the clip, using them raw would slide the whole face as the cursor
+   moved. Each frame is translated back onto frame 86 (phase correlation on a patch of
+   cheek) and all frames are cropped to the same rectangle, so only the iris moves.
 
-Three things had to be right for this to look real, and each took a couple of attempts:
-
-- **The sclera behind the iris** is rebuilt by Laplace diffusion — the surrounding white
-  of the eye is allowed to flow inward until it fills the gap. Earlier attempts used a
-  flat colour, which showed up as a pale disc, and a radial smear, which left a grey arc.
-- **The lashes were removed from the iris disc itself**, by copying from the mirror-image
-  point across the pupil. Otherwise a ghost set of lashes travelled around with the iris.
-- **The eye opening was traced by hand** off frame 186. Every automatic detector either
-  leaked into the eyelid or cut the sclera in half; the lid margins are easy to read off
-  the picture and a hand-traced curve is smooth by construction. The control points are
-  in `rig.py` terms `UX`/`UY`/`LY`.
-
-If you ever regenerate these three layers from a different video frame, the disc's
-position and radius are baked into the `IRIS` and `LID` constants in the script — they
-must be regenerated together.
+Frames are also chosen to keep the **eyelid opening** as consistent as the footage allows
+— a big step in lid opening between neighbouring frames reads as the eye blinking open as
+the cursor moves.
 
 ### The frame files
 
 | Files | Count | What |
 |---|---|---|
 | `eye_human.webp` | 1 | stage 1, the still human eye |
-| `blink_000` … `blink_028` | 29 | the blink and transformation |
-| `expl_000` … `expl_026` | 27 | stage 3, the explosion |
+| `blink_000` … `blink_025` | 26 | the blink and transformation |
+| `gaze_000` … `gaze_006` | 7 | the eye looking around, left to right |
+| `expl_000` … `expl_025` | 26 | the explosion |
 
-Total about 2.4 MB. Only `eye_human.webp` is needed for the first paint; everything else
-loads in the background, explosion frames last.
+60 files, about 2.9 MB. Only `eye_human.webp` is needed for the first paint; the rest
+loads in the background, explosion frames last, and each one is decoded once off screen
+at load so that scrubbing never stutters.
 
-The older `frame_000.webp` … `frame_047.webp` are from a previous version and are no
-longer referenced. They can be deleted.
+**Frame files are requested with a `?v=` tag** (`V` in the script). The filenames stay the
+same between versions, so without it browsers and Vercel's CDN serve old images against
+new code — which has happened, and looked like the fix had failed. **Bump it whenever the
+frames change.** Currently `?v=10`.
+
+The counts in the script (`BLINK_N`, `GAZE_N`, `EXPL_N`) and the length of `GAZE_POS`
+must match the files on disk. If they don't, the eye pins to one position and stops
+following the cursor. Check them after any rebuild.
 
 ---
 
@@ -134,8 +132,8 @@ Three ways to get files into the repo:
 
 1. **GitHub website** — https://github.com/alexandraalenard/Foresite/upload/main, drag
    files in, click "Commit changes".
-2. **VS Code** — the repo is cloned locally. Copy files in, then Source Control panel →
-   message → Commit → Sync.
+2. **VS Code** — the repo is cloned at `Desktop\Foresite`. Copy files in, then Source
+   Control panel → message → Commit → Sync.
 3. **Git Bash** — `cd` into the repo, `git add .`, `git commit -m "..."`, `git push`.
    NOTE: pasting into Git Bash inserts junk characters (`^[[200~`) and fails. Type
    commands, don't paste.
@@ -151,6 +149,17 @@ Depends entirely on the tools it has:
 - Neither can `git push` on her behalf: the credentials live in Windows, and the sandbox
   that runs commands is a separate Linux VM that can't see them. **Pushing is always the
   owner's step.** Say so up front rather than attempting workarounds.
+
+### A trap: the connected folder cannot delete files
+
+The Cowork bridge mounts the folder read/write but **without permission to unlink**. Two
+consequences:
+
+- `git add` leaves a `.git/index.lock` behind that it cannot remove, and VS Code then
+  fails with *"Unable to create '.git/index.lock': File exists."* Move the lock out of the
+  way after any git command that writes.
+- `tar -xzf` fails with "File exists". Use `tar --overwrite -xzf`, which writes in place.
+- Shell redirection (`>`) works fine, because it truncates rather than unlinks.
 
 ---
 

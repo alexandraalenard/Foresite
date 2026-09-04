@@ -1,6 +1,6 @@
 # Foresite — Key Decisions (and why)
 
-_Last updated: 3 September 2026_
+_Last updated: 4 September 2026_
 
 - **Plain HTML, one file + frames folder — no framework.** Simple, fast, cheap to host,
   and understandable by a non-technical owner. No build step to break.
@@ -19,7 +19,11 @@ _Last updated: 3 September 2026_
   moments: human eye to ~frame 31, blink and transformation 31–70, settled AI eye to
   ~186, explosion 188–240.
 
-- **The iris tracks the cursor by compositing, not by moving the whole picture.**
+- ~~**The iris tracks the cursor by compositing, not by moving the whole picture.**~~
+  **SUPERSEDED 4 Sept — see the section at the end of this file.** Kept as a record of
+  what was tried.
+
+- **(superseded)**
   The obvious approach — nudging the entire eye image toward the cursor — reads as the
   whole face sliding around, not as an eye looking at you. Instead the iris was cut out
   as its own layer, the sclera behind it reconstructed, and the eyelid painted back over
@@ -27,7 +31,11 @@ _Last updated: 3 September 2026_
   Costs three image files instead of one; worth it, since this is the thing visitors
   actually look at.
 
-- **The lashes over the iris are reflections, and they belong to the surface, not the iris.**
+- ~~**The lashes over the iris are reflections, and they belong to the surface, not the iris.**~~
+  **SUPERSEDED 4 Sept — the whole compositing approach was dropped.** Kept because the
+  reasoning about why the naive detectors failed is still worth not repeating.
+
+- **(superseded)**
   This was the bug behind every "glitchy" report. The pale strokes and the bright highlight
   across the iris are the lashes mirrored in the wet front of the eye. They were baked into
   the iris image, so the iris dragged them around with it.
@@ -203,3 +211,52 @@ _Last updated: 3 September 2026_
 
 - **Founding-clients section** instead of fake testimonials — honest about being new, and
   turns it into a fair-deal hook.
+
+
+---
+
+## 4 September 2026 — hero rebuilt from the second eye clip
+
+- **Swap whole video frames; composite nothing.** Four approaches were tried before this
+  and all four were worse:
+  1. *Nudge the whole picture toward the cursor.* Reads as the face sliding around, not
+     as an eye looking at you.
+  2. *Cut the iris out as its own layer, rebuild the sclera behind it, paint the eyelid
+     back over the top.* Left a white hole where the iris had been and mangled the lashes
+     wherever a strand crossed the cut line.
+  3. *Cross-fade between two gaze frames.* They are different eye positions, not a tween,
+     so the eye ghosted against itself — the "it all goes blurry after the blink" report.
+  4. *Shift the whole frame by the sub-step remainder to smooth the gaps.* The eye moved
+     continuously but the whole picture jerked about 25px per step — the "the whole screen
+     now jumps around" report.
+
+  What ships: whole, untouched frames. Nothing cut out, nothing composited, nothing
+  shifted at runtime.
+
+- **Only frames where the eye was AT REST are used.** The clip's flicks are motion blurred
+  in the source footage. Sharpness measured as the variance of the Laplacian in a ring
+  around the pupil: mid-flick frames score under 200, resting frames 1000–2200. Using
+  consecutive frames therefore meant using blurred ones, which is exactly why the iris
+  looked soft everywhere except hard left.
+
+- **Every frame is registered to a common reference before export.** The camera in the
+  second clip drifts about 70px sideways and 24px vertically across its ten seconds.
+  Because the gaze frames now come from moments far apart in the clip, raw frames would
+  slide the whole face as the cursor moved. Each frame is translated back onto frame 86
+  (phase correlation on a patch of cheek) and cropped to a common rectangle. Measured
+  face-region movement per step is now the same as it was with consecutive frames.
+
+- **Gaze frames are matched on eyelid opening too.** The lid opening drifts through the
+  clip (roughly 360px early, 435px in the middle, 495px late). A big step between
+  neighbouring frames reads as the eye blinking open as the cursor moves.
+
+- **Two clips, spliced.** The second clip has a far bolder iris and stays sharp almost
+  throughout, but **has no explosion**. The first clip has the explosion. They were
+  generated from the same base image and overlay almost exactly, so the burst is cut in
+  from the first clip at the frame where the sparks have already swallowed the iris, faded
+  over four scroll indices. The join lands on white particles, not on a different eye.
+
+- **What would actually widen the eye's range** is a new clip where the eye moves *slowly*
+  rather than flicking — slow movement gives sharp frames across a continuous range. That
+  is a re-generation request, not something that can be fixed in code. This clip gives
+  about 210px of travel across seven usable positions.

@@ -1,6 +1,6 @@
 # Foresite — Current State
 
-_Last updated: 3 September 2026_
+_Last updated: 4 September 2026_
 
 ## ✅ Done
 
@@ -18,14 +18,22 @@ _Last updated: 3 September 2026_
   explosion scrubbed by scroll. Works on desktop, on phones (tap instead of cursor,
   with the iris drifting gently on its own), and under "reduce motion" accessibility
   settings.
-- Tested in a real browser at 1440×900, 1280×800 and 390×844: no console errors, no
-  failed requests, no broken layout.
+- **Hero rebuilt from the second eye clip (4 Sept).** Bolder AI iris, and sharp at every
+  cursor position instead of only when looking left. Seven gaze positions, all taken from
+  frames where the eye was at rest; every frame registered so the face stays locked and
+  only the iris moves. The explosion is still cut in from the first clip, the only one
+  that has one. 60 files, 2.9 MB, cache tag `?v=10`.
+- Light palette across the whole site, interactive consumer-behaviour timeline, and the
+  glass panel behind the hero paragraph: all in and tested.
+- Tested in a real browser at 1920×1080, 1500×900, 768×1024, 390×844 and 360×800: no
+  console errors, no failed requests, no sideways scroll, 60fps while the cursor sweeps,
+  and text contrast passing WCAG AA against all five hero backgrounds (worst 6.83:1).
 
 ## 🔄 Waiting on the owner
 
-- **The new `index.html` and `frames/` are sitting in the `foresite-explode` folder on
-  the PC but have NOT been pushed to GitHub.** Nothing is live until they are.
-  See NEXT-TASKS.md, task 1.
+- **The new eye is on a branch called `new-eye-2`, not on the live site.** Commit and
+  sync it in VS Code, look at the Vercel preview, and say yes or no before it goes to
+  `main`. See NEXT-TASKS.md, task 1.
 
 ## ⏳ Not started (human-only — no coding needed)
 
