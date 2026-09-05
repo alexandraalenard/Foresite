@@ -313,3 +313,14 @@ Claude artifact). These are the findings that were implemented on this site, and
   Australian market floor (freelancers $1,500-$2,500 for a basic build) and works out
   at $30-$50 an hour, and that clients ranked price below vision, trust and value.
   That is a business decision for the owner, not a code change.
+
+- **The font stylesheet no longer blocks the first paint.** It was a plain
+  `<link rel="stylesheet">` to Google Fonts, which means the browser refuses to draw
+  anything at all until Google answers. Measured on a connection where Google Fonts hung:
+  first paint went from 0.2s to 12.7s, and the page looked completely broken. It now
+  loads with the `media="print"` / `onload` pattern, so the page renders in its fallback
+  faces (Georgia, Arial) and swaps when the real ones arrive. Re-measured with Google
+  Fonts deliberately hung for twenty seconds: first paint 244ms.
+
+  Measured Core Web Vitals after the change: LCP 196ms unthrottled, 408ms on simulated
+  slow 4G, CLS 0 to 0.03. The book's thresholds are 2500ms and 0.1.

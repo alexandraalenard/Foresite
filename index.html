@@ -31,7 +31,15 @@
 
   <link rel="preconnect" href="https://fonts.googleapis.com">
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
-  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap">
+  <!-- The font stylesheet is loaded WITHOUT blocking the first paint. It used
+       to be a plain stylesheet link, which means the browser refuses to draw
+       anything until Google answers. Measured on a connection where Google
+       Fonts hung: first paint went from 0.2s to 12.7s. The media="print"
+       trick makes the browser fetch it at low priority and apply it on load;
+       every face already has a real fallback, so the page renders in Georgia
+       or Arial for the moment before it arrives. -->
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap" media="print" onload="this.media=&#39;all&#39;">
+  <noscript><link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Archivo:wght@400;500;700&family=IBM+Plex+Mono:wght@400;500&family=Newsreader:ital,opsz,wght@1,6..72,300;1,6..72,400&display=swap"></noscript>
   
   <style>html{color-scheme:light;background:#F4EFEA}img{max-width:100%}
   .hero-eye-canvas{
